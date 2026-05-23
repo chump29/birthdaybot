@@ -1,5 +1,4 @@
 import {
-  type APIEmbedField,
   type Channel,
   type ChatInputCommandInteraction,
   type Client,
@@ -144,11 +143,11 @@ const doBirthdays = async (user: User | null = null): Promise<void> => {
                     name: `${Bun.env.NAME} v${Bun.env.npm_package_version}`
                   })
                   .setImage(Bun.env.LOGO2_URL)
-                  .setDescription("🎂  HAPPY BIRTHDAY  🎉")
-                  .setFields({
-                    name: member.displayName,
-                    value: ""
-                  } as APIEmbedField)
+                  .setTitle("🎂  HAPPY BIRTHDAY  🎉")
+                  .setFooter({
+                    iconURL: member.displayAvatarURL(),
+                    text: member.displayName
+                  })
               ]
             })
           })

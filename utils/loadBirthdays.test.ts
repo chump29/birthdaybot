@@ -58,6 +58,7 @@ describe("loadBirthdays", (): void => {
       fetch: jest.fn().mockResolvedValue({
         members: {
           fetch: jest.fn().mockResolvedValue({
+            displayAvatarURL: jest.fn(),
             displayName: username(),
             roles: {
               add: jest.fn().mockImplementation(async (): Promise<void> => {
@@ -68,7 +69,7 @@ describe("loadBirthdays", (): void => {
                 rolesCache.delete("TEST")
               })
             } as unknown as GuildMemberRoleManager
-          } as GuildMember)
+          } as unknown as GuildMember)
         } as unknown as GuildMemberManager,
         roles: {
           fetch: jest.fn().mockResolvedValue(role)

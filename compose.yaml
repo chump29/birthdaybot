@@ -10,11 +10,11 @@ services:
     environment:
       - LOGO_NAME=birthdaybot.webp
       - LOGO_PATH=./utils/images
-      - LOGO_NAME2=birthday.webp
-      - LOGO_PATH2=./utils/images
+      - LOGO2_NAME=birthday.webp
+      - LOGO2_PATH=./utils/images
       - LOGO_PORT=8007
       - LOGO_URL=https://birthdaybot.postfmly.us/birthdaybot.webp
-      - LOGO_URL2=https://birthdaybot.postfmly.us/birthday.webp
+      - LOGO2_URL=https://birthdaybot.postfmly.us/birthday.webp
       - TZ=America/Chicago
     env_file: .env
     labels:

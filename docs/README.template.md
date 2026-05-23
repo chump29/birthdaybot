@@ -17,7 +17,15 @@
 
 ---
 
-### 🔗 Invite Link <!-- markdownlint-disable-line MD001 -->
+### What it does: <!-- markdownlint-disable-line MD001 -->
+
+- Wishes user a Happy Birthday at midnight
+
+- Gives user a specific role for their birthday
+
+---
+
+### 🔗 Invite Link
 
 [Add BirthdayBot](https://discord.com/oauth2/authorize?client_id=1507172799666458705&permissions=268453888&integration_type=0&scope=bot)
 
@@ -40,7 +48,7 @@
 |    Add Birthday     | `/birthday [month] [day]` | SendMessages  |
 |   Delete Birthday   |         `/delete`         | SendMessages  |
 |        Info         |          `/info`          | SendMessages  |
-|   List Birthdays    |          `/list`          | Administrator |
+|   List Birthdays    |          `/list`          | SendMessages  |
 |        Ping         |          `/ping`          | SendMessages  |
 | Wish Happy Birthday |      `/wish [user]`       | Administrator |
 

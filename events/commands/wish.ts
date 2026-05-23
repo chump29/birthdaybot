@@ -36,7 +36,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
 
   await doBirthdays(user).then(async (): Promise<void> => {
     await interaction.reply({
-      content: `Wished \`${user.displayName}\` a Happy Birthday`,
+      content: `Wished \`${user.displayName}\` a Happy Birthday and added Birthday role`,
       flags: MessageFlags.Ephemeral
     })
   })
