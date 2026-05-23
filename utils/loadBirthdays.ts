@@ -130,38 +130,45 @@ const doBirthdays = async (user: User | null = null): Promise<void> => {
         return
       }
 
+      let isBirthday: boolean = false
       if (user || (birthday.month === date.getMonth() + 1 && birthday.day === date.getDate())) {
+        isBirthday = true
+
         if (!member.roles.cache.has(role.id)) {
-          await member.roles.add(role).then(async (): Promise<void> => {
-            await CHANNEL?.send({
-              flags: MessageFlags.SuppressNotifications,
-              embeds: [
-                new EmbedBuilder()
-                  .setColor("#78866b")
-                  .setAuthor({
-                    iconURL: Bun.env.LOGO_URL,
-                    name: `${Bun.env.NAME} v${Bun.env.npm_package_version}`
-                  })
-                  .setImage(Bun.env.LOGO2_URL)
-                  .setTitle("🎂  HAPPY BIRTHDAY  🎉")
-                  .setFooter({
-                    iconURL: member.displayAvatarURL(),
-                    text: member.displayName
-                  })
-              ]
-            })
-          })
+          await member.roles.add(role)
 
           if (Bun.env.DEBUG) {
             info(`Added Birthday role to ${member.displayName}`)
           }
         }
       } else {
+        isBirthday = false
+
         await member.roles.remove(role)
 
         if (Bun.env.DEBUG) {
           info(`Removed Birthday role from ${member.displayName}`)
         }
+      }
+
+      if (isBirthday) {
+        await CHANNEL?.send({
+          flags: MessageFlags.SuppressNotifications,
+          embeds: [
+            new EmbedBuilder()
+              .setColor("#78866b")
+              .setAuthor({
+                iconURL: Bun.env.LOGO_URL,
+                name: `${Bun.env.NAME} v${Bun.env.npm_package_version}`
+              })
+              .setImage(Bun.env.LOGO2_URL)
+              .setTitle("🎂  HAPPY BIRTHDAY  🎉")
+              .setFooter({
+                iconURL: member.displayAvatarURL(),
+                text: member.displayName
+              })
+          ]
+        })
       }
     })
   )

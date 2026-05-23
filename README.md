@@ -11,7 +11,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-3.49.2-informational?style=plastic&logo=sqlite)
 
 ![CodeQL](https://github.com/chump29/birthdaybot/workflows/CodeQL/badge.svg) &nbsp;
-![Coverage](https://img.shields.io/badge/Coverage-96.35%25-success?style=plastic&logo=jest)
+![Coverage](https://img.shields.io/badge/Coverage-96.39%25-success?style=plastic&logo=jest)
 
 ![License](https://img.shields.io/github/license/chump29/birthdaybot?style=plastic&color=blueviolet&label=License&logo=gplv3)
 
