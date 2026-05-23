@@ -1,0 +1,13 @@
+diff --git a/pluralize.js b/pluralize.js
+index b8f970adc84a99de69f316ac05358130dc7aa0ce..9f7cc3b92658b03ee033c031c6c20a2beee26bf4 100644
+--- a/pluralize.js
++++ b/pluralize.js
+@@ -176,7 +176,7 @@
+     var pluralized = count === 1
+       ? pluralize.singular(word) : pluralize.plural(word);
+ 
+-    return (inclusive ? count + ' ' : '') + pluralized;
++    return (inclusive ? count.toLocaleString() + ' ' : '') + pluralized;
+   }
+ 
+   /**

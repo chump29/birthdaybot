@@ -1,0 +1,11 @@
+*
+
+!bun.lock
+!db/schema.ts
+!events/
+!patches/
+!utils/
+!healthcheck.sh
+!index.ts
+!package.json
+!tsconfig.json

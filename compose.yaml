@@ -1,0 +1,29 @@
+services:
+  birthdaybot:
+    container_name: birthdaybot
+    image: git.postfmly.com/admin/birthdaybot:arm64
+    restart: unless-stopped
+    ports:
+      - "8007:8007"
+    volumes:
+      - db:/app/db
+    environment:
+      - LOGO_NAME=birthdaybot.webp
+      - LOGO_PATH=./utils/images
+      - LOGO_NAME2=birthday.webp
+      - LOGO_PATH2=./utils/images
+      - LOGO_PORT=8007
+      - LOGO_URL=https://birthdaybot.postfmly.us/birthdaybot.webp
+      - LOGO_URL2=https://birthdaybot.postfmly.us/birthday.webp
+      - TZ=America/Chicago
+    env_file: .env
+    labels:
+      - wud.display.name=BirthdayBot
+      - homepage.group=Personal
+      - homepage.name=BirthdayBot
+      - homepage.icon=https://birthdaybot.postfmly.com/birthdaybot.webp
+
+volumes:
+  db:
+
+networks: {}

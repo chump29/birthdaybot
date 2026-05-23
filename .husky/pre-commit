@@ -1,0 +1,7 @@
+#!/usr/bin/env -S bash -e
+
+bunx lint-staged
+
+bun run test
+
+#exit 1

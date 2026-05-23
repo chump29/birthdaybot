@@ -1,0 +1,77 @@
+{
+  "name": "birthdaybot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BirthdayBot for Discord",
+  "keywords": [
+    "birthday",
+    "bot",
+    "discord"
+  ],
+  "homepage": "https://github.com/chump29/birthdaybot",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chump29/birthdaybot.git"
+  },
+  "license": "GPL-3.0-only",
+  "author": {
+    "name": "Chris Post",
+    "email": "admin@postfmly.com"
+  },
+  "type": "module",
+  "module": "index.ts",
+  "scripts": {
+    "clean": "rimraf node_modules bun.lock .vscode coverage",
+    "clean:coverage": "rimraf coverage",
+    "clean:db": "rimraf db/birthdaybot.db*",
+    "dev": "bun --watch run index.ts",
+    "preinstall": "bunx only-allow bun",
+    "postinstall": "config-init",
+    "lint": "bun run lint:biome && bun run lint:env",
+    "lint:biome": "biome check --write --verbose",
+    "lint:ci": "biome ci --verbose --reporter=default --reporter=github && bun run lint:env",
+    "lint:env": "dotenv-linter check .",
+    "prepare": "husky",
+    "prod": "bun run index.ts",
+    "test": "bun run clean:coverage && bun test --coverage --isolate --coverage-reporter=text --coverage-reporter=lcov"
+  },
+  "lint-staged": {
+    "*.{json,ts}": "biome ci --no-errors-on-unmatched",
+    ".env*": "dotenv-linter check"
+  },
+  "overrides": {
+    "@biomejs/biome": "^2.4.15",
+    "drizzle-orm": "1.0.0-rc.3",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@marianmeres/parse-boolean": "^2.1.0",
+    "@postfmly/checkrate": "^1.0.6",
+    "@postfmly/logger": "^1.0.8",
+    "@postfmly/logoserver": "^1.0.9",
+    "discord.js": "^14.26.4",
+    "drizzle-orm": "1.0.0-rc.3",
+    "ordinal": "^1.0.3",
+    "pluralize": "^8.0.0"
+  },
+  "devDependencies": {
+    "@nano-faker/core": "^1.0.1",
+    "@nano-faker/internet": "^1.0.1",
+    "@nano-faker/patterns": "^1.0.1",
+    "@postfmly/config": "^1.2.23",
+    "@types/pluralize": "^0.0.33",
+    "drizzle-query-logger": "^1.1.2",
+    "husky": "^9.1.7",
+    "lcov-total": "^2.1.1",
+    "lint-staged": "^17.0.5",
+    "rimraf": "^6.1.3"
+  },
+  "packageManager": "bun@1.3.14",
+  "engines": {
+    "bun": "~1.3.14"
+  },
+  "engineStrict": true,
+  "patchedDependencies": {
+    "pluralize@8.0.0": "patches/pluralize@8.0.0.patch"
+  }
+}

@@ -1,0 +1,5 @@
+.env.local
+.vscode
+coverage/
+db/birthdaybot*
+node_modules/
