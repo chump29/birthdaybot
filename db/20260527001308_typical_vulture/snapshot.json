@@ -1,0 +1,93 @@
+{
+  "dialect": "sqlite",
+  "id": "87cd2c12-4554-4b41-8c62-875adfbd02fe",
+  "renames": [],
+  "version": "7",
+  "ddl": [
+    {
+      "entityType": "tables",
+      "name": "birthdays"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "day",
+      "notNull": true,
+      "table": "birthdays",
+      "type": "integer"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "id",
+      "notNull": false,
+      "table": "birthdays",
+      "type": "integer"
+    },
+    {
+      "autoincrement": false,
+      "default": "false",
+      "entityType": "columns",
+      "generated": null,
+      "name": "is_updated",
+      "notNull": false,
+      "table": "birthdays",
+      "type": "integer"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "month",
+      "notNull": true,
+      "table": "birthdays",
+      "type": "integer"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "user_id",
+      "notNull": true,
+      "table": "birthdays",
+      "type": "text"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "user_name",
+      "notNull": true,
+      "table": "birthdays",
+      "type": "text"
+    },
+    {
+      "entityType": "pks",
+      "name": "birthdays_pk",
+      "nameExplicit": false,
+      "table": "birthdays",
+      "columns": [
+        "id"
+      ]
+    },
+    {
+      "entityType": "uniques",
+      "name": "birthdays_user_id_unique",
+      "nameExplicit": false,
+      "table": "birthdays",
+      "columns": [
+        "user_id"
+      ]
+    }
+  ],
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ]
+}

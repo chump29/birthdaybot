@@ -124,13 +124,16 @@ describe("loadBirthdays", (): void => {
   test("addBirthday", async (): Promise<void> => {
     mock.module("./db.ts", (): unknown => {
       return {
-        addBirthday: jest.fn().mockImplementation(async (userId: string, month: number, day: number): Promise<void> => {
-          BIRTHDAYS.push({
-            day: day,
-            month: month,
-            user_id: userId
-          } as IBirthday)
-        })
+        addBirthday: jest
+          .fn()
+          .mockImplementation(async (userId: string, userName: string, month: number, day: number): Promise<void> => {
+            BIRTHDAYS.push({
+              day: day,
+              month: month,
+              user_id: userId,
+              user_name: userName
+            } as IBirthday)
+          })
       }
     })
 

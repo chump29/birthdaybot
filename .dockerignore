@@ -1,7 +1,7 @@
 *
 
 !bun.lock
-!db/schema.ts
+!db/
 !events/
 !patches/
 !utils/
@@ -9,3 +9,5 @@
 !index.ts
 !package.json
 !tsconfig.json
+
+db/birthdaybot*

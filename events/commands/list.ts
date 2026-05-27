@@ -26,7 +26,7 @@ const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody => {
     .toJSON()
 }
 
-const getFields = async (name: string): Promise<APIEmbedField[]> => {
+const getFields = async (): Promise<APIEmbedField[]> => {
   const fields: APIEmbedField[] = [
     {
       name: "_ _",
@@ -43,7 +43,7 @@ const getFields = async (name: string): Promise<APIEmbedField[]> => {
       (birthday: IBirthday): void => {
         fields.push({
           inline: true,
-          name: name,
+          name: birthday.user_name,
           value: `${birthday.month}/${birthday.day}`
         } as APIEmbedField)
       }
@@ -63,7 +63,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
       new EmbedBuilder()
         .setColor("#78866b")
         .setTitle(`🎂  ${Bun.env.NAME} Birthdays  🎉`)
-        .setFields(await getFields(interaction.user.displayName))
+        .setFields(await getFields())
         .toJSON()
     ]
   })

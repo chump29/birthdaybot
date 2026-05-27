@@ -68,12 +68,15 @@ const addBirthday = async (interaction: ChatInputCommandInteraction): Promise<st
   const month: number = interaction.options.getInteger("month") as number
   const day: number = interaction.options.getInteger("day") as number
 
-  const insertOrUpdate: string = await addBirthdayDB(interaction.user.id, month, day).then(
-    async (insertOrUpdate: string): Promise<string> => {
-      await refreshBirthdays()
-      return insertOrUpdate
-    }
-  )
+  const insertOrUpdate: string = await addBirthdayDB(
+    interaction.user.id,
+    interaction.user.displayName,
+    month,
+    day
+  ).then(async (insertOrUpdate: string): Promise<string> => {
+    await refreshBirthdays()
+    return insertOrUpdate
+  })
 
   if (Bun.env.DEBUG) {
     info(`${insertOrUpdate} birthday of ${months[month]} ${ordinal(day)} for ${interaction.user.displayName}`)

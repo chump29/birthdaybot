@@ -108,6 +108,7 @@
 |    Run DEV     |    `bun run dev`     |     `bun dev`      |
 |    Run PROD    |    `bun run prod`    |     `bun prod`     |
 |      Test      |    `bun run test`    |       &mdash       |
+|  Generate SQL  |    `bun run sql`     |     `bun sql`      |
 
 ---
 

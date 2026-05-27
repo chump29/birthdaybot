@@ -1,4 +1,4 @@
-import { mkdir } from "node:fs/promises"
+import { mkdir, readdir } from "node:fs/promises"
 
 import { Database, SQLiteError } from "bun:sqlite"
 
@@ -6,6 +6,7 @@ import { info } from "@postfmly/logger"
 
 import { eq, sql } from "drizzle-orm"
 import { drizzle, type SQLiteBunDatabase } from "drizzle-orm/bun-sqlite"
+import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 
 import { birthdays, type IBirthday } from "../db/schema.ts"
 
@@ -63,15 +64,23 @@ const openDatabase = async (): Promise<void> => {
         info("Creating tables")
       }
 
-      DB.run(
-        sql.raw(`
-          CREATE TABLE birthdays(
-            id INTEGER PRIMARY KEY,
-            user_id TEXT NOT NULL UNIQUE,
-            month INTEGER NOT NULL,
-            day INTEGER NOT NULL,
-            is_updated INTEGER DEFAULT 0);`)
-      )
+      await readdir(Bun.env.DB_PATH, {
+        recursive: true
+      })
+        .then((files: string[]): void => {
+          if (!files.filter((file: string): boolean => file.endsWith(".sql")).length) {
+            throw new Error("Could not find SQL script")
+          }
+        })
+        .then((): void => {
+          if (!DB) {
+            throw new Error("Database not open")
+          }
+
+          migrate(DB, {
+            migrationsFolder: Bun.env.DB_PATH
+          })
+        })
     } else {
       throw e
     }
@@ -82,7 +91,7 @@ const openDatabase = async (): Promise<void> => {
   }
 }
 
-const addBirthday = async (userId: string, month: number, day: number): Promise<string> => {
+const addBirthday = async (userId: string, userName: string, month: number, day: number): Promise<string> => {
   if (!DB) {
     throw new Error("Database not open")
   }
@@ -91,7 +100,8 @@ const addBirthday = async (userId: string, month: number, day: number): Promise<
     .values({
       day: day,
       month: month,
-      user_id: userId
+      user_id: userId,
+      user_name: userName
     })
     .onConflictDoUpdate({
       target: birthdays.user_id,

@@ -8,7 +8,8 @@ const birthdays = sqliteTable("birthdays", {
     mode: "boolean"
   }).default(false),
   month: integer().notNull(),
-  user_id: text().notNull().unique()
+  user_id: text().notNull().unique(),
+  user_name: text().notNull()
 })
 
 type IBirthday = InferSelectModel<typeof birthdays>

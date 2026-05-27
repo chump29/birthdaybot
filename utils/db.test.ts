@@ -6,6 +6,7 @@ import { afterAll, beforeAll, describe, expect, mock, test } from "bun:test"
 import { info } from "@postfmly/logger"
 
 import { int } from "@nano-faker/core"
+import { username } from "@nano-faker/internet"
 import { fake } from "@nano-faker/patterns"
 import { eq } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/bun-sqlite"
@@ -59,9 +60,10 @@ describe("db", (): void => {
   test("addBirthday", async (): Promise<void> => {
     const ID_LEN: number = 19
     userId = fake("#".repeat(ID_LEN))
+    const userName: string = username()
     const month: number = int(MIN_MONTHS, MAX_MONTHS)
     const day: number = int(MIN_DAYS, MAX_DAYS)
-    await addBirthday(userId, month, day)
+    await addBirthday(userId, userName, month, day)
 
     expect(TEST_DB).not.toBeNull()
     let birthday: IBirthday | undefined = undefined
