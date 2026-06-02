@@ -3,14 +3,15 @@ import { type Client } from "discord.js"
 import { error, info } from "@postfmly/logger"
 import { startLogoServer } from "@postfmly/logoserver"
 
-import { parseBoolean } from "@marianmeres/parse-boolean"
+import { nonEmpty, parseBoolean, pipe, safeParse, string } from "valibot"
 
 import { loadCommands } from "./events/loadCommands.ts"
 import { client, login, shutdown } from "./utils/client.ts"
 import { openDatabase } from "./utils/db.ts"
 import { handleBirthdays, loadSettings } from "./utils/loadBirthdays.ts"
 
-Bun.env.DEBUG = parseBoolean(Bun.env.IS_DEBUG)
+const d = safeParse(pipe(string(), nonEmpty(), parseBoolean()), Bun.env.IS_DEBUG)
+Bun.env.DEBUG = d.success ? d.output : false
 
 Bun.env.NAME = Bun.env.NAME ?? "BirthdayBot"
 

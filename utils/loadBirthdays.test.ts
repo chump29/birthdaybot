@@ -16,8 +16,7 @@ import {
   type User
 } from "discord.js"
 
-import { username } from "@nano-faker/internet"
-import { fake } from "@nano-faker/patterns"
+import { randSequence, randUserName } from "@ngneat/falso"
 
 import { type IBirthday } from "../db/schema.ts"
 import {
@@ -32,7 +31,11 @@ import {
 
 describe("loadBirthdays", (): void => {
   const ID_LEN: number = 19
-  const getId = (): string => fake("#".repeat(ID_LEN))
+  const getId = (): string =>
+    randSequence({
+      charType: "numeric",
+      size: ID_LEN
+    })
 
   const date: Date = new Date()
 
@@ -59,7 +62,7 @@ describe("loadBirthdays", (): void => {
         members: {
           fetch: jest.fn().mockResolvedValue({
             displayAvatarURL: jest.fn(),
-            displayName: username(),
+            displayName: randUserName(),
             roles: {
               add: jest.fn().mockImplementation(async (): Promise<void> => {
                 rolesCache.set("TEST", role)
@@ -116,7 +119,7 @@ describe("loadBirthdays", (): void => {
       })
     } as unknown as CommandInteractionOptionResolver,
     user: {
-      displayName: username(),
+      displayName: randUserName(),
       id: newId
     } as User
   } as unknown as ChatInputCommandInteraction

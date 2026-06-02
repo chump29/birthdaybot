@@ -5,9 +5,7 @@ import { afterAll, beforeAll, describe, expect, mock, test } from "bun:test"
 
 import { info } from "@postfmly/logger"
 
-import { int } from "@nano-faker/core"
-import { username } from "@nano-faker/internet"
-import { fake } from "@nano-faker/patterns"
+import { randNumber, randSequence, randUserName } from "@ngneat/falso"
 import { eq } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/bun-sqlite"
 import { EnhancedQueryLogger } from "drizzle-query-logger"
@@ -59,10 +57,19 @@ let userId: string = ""
 describe("db", (): void => {
   test("addBirthday", async (): Promise<void> => {
     const ID_LEN: number = 19
-    userId = fake("#".repeat(ID_LEN))
-    const userName: string = username()
-    const month: number = int(MIN_MONTHS, MAX_MONTHS)
-    const day: number = int(MIN_DAYS, MAX_DAYS)
+    userId = randSequence({
+      charType: "numeric",
+      size: ID_LEN
+    })
+    const userName: string = randUserName()
+    const month: number = randNumber({
+      max: MAX_MONTHS,
+      min: MIN_MONTHS
+    })
+    const day: number = randNumber({
+      max: MAX_DAYS,
+      min: MIN_DAYS
+    })
     await addBirthday(userId, userName, month, day)
 
     expect(TEST_DB).not.toBeNull()

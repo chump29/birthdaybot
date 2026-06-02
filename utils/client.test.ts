@@ -10,7 +10,7 @@ import {
   type PresenceData
 } from "discord.js"
 
-import { fake } from "@nano-faker/patterns"
+import { randSequence } from "@ngneat/falso"
 
 import { client, login, shutdown } from "./client.ts"
 
@@ -74,7 +74,10 @@ describe("client", (): void => {
           login: jest.fn(),
           user: {
             displayName: Bun.env.NAME,
-            tag: `${Bun.env.NAME}#${fake("####")}`
+            tag: `${Bun.env.NAME}#${randSequence({
+              charType: "numeric",
+              size: 4
+            })}`
           } as ClientUser
         } as unknown as Client
       }
@@ -84,7 +87,16 @@ describe("client", (): void => {
     const TS_LEN: number = 6
     const HMAC_LEN: number = 38
 
-    Bun.env.TOKEN = fake(`${"*".repeat(ID_LEN)}.${"*".repeat(TS_LEN)}.${"*".repeat(HMAC_LEN)}`)
+    Bun.env.TOKEN = `${randSequence({
+      charType: "alphaNumeric",
+      size: ID_LEN
+    })}.${randSequence({
+      charType: "alphaNumeric",
+      size: TS_LEN
+    })}.${randSequence({
+      charType: "alphaNumeric",
+      size: HMAC_LEN
+    })}`
 
     const loginObj: Client = await login()
     expect(loginObj).not.toBeUndefined()

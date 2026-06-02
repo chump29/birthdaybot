@@ -9,7 +9,8 @@ import {
   MessageFlags,
   type Role,
   type TextChannel,
-  type User
+  type User,
+  userMention
 } from "discord.js"
 
 import { error, info } from "@postfmly/logger"
@@ -156,6 +157,7 @@ const doBirthdays = async (user: User | null = null): Promise<void> => {
 
       if (isBirthday) {
         await CHANNEL?.send({
+          content: userMention(member.id),
           flags: MessageFlags.SuppressNotifications,
           embeds: [
             new EmbedBuilder()
