@@ -1,9 +1,15 @@
 import { parse } from "node:path"
 
+import { checkRate } from "@postfmly/checkrate"
+import { error } from "@postfmly/logger"
+
+import { default as dayjs } from "dayjs"
+import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
 import {
   type APIEmbedField,
   type ChatInputCommandInteraction,
   EmbedBuilder,
+  type HexColorString,
   InteractionContextType,
   MessageFlags,
   PermissionFlagsBits,
@@ -11,44 +17,44 @@ import {
   SlashCommandBuilder
 } from "discord.js"
 
-import { checkRate } from "@postfmly/checkrate"
-import { info } from "@postfmly/logger"
-
 import { type IBirthday } from "../../db/schema.ts"
-import { BIRTHDAYS } from "../../utils/loadBirthdays.ts"
+import { DB } from "../../utils/db.ts"
+import { env } from "../../utils/env.ts"
 
-const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody => {
-  return new SlashCommandBuilder()
+dayjs.extend(advancedFormat)
+
+const { COLOR, NAME }: typeof env = env
+
+const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody =>
+  new SlashCommandBuilder()
     .setName(parse(import.meta.file).name)
-    .setDescription("List birthdays")
-    .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
+    .setDescription("List all birthdays")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .setContexts(InteractionContextType.Guild)
     .toJSON()
-}
 
-const getFields = async (): Promise<APIEmbedField[]> => {
-  const fields: APIEmbedField[] = [
-    {
-      name: "_ _",
-      value: ""
-    } as APIEmbedField
-  ]
-  if (!BIRTHDAYS.length) {
+const getFields = (birthdays: IBirthday[]): APIEmbedField[] => {
+  const fields: APIEmbedField[] = [{ name: "_ _", value: "" } as APIEmbedField]
+
+  if (birthdays.length > 0) {
+    for (const birthday of birthdays.toSorted(
+      (a: IBirthday, b: IBirthday): number => a.month - b.month || a.day - b.day
+    )) {
+      const date: string = `${birthday.month}/${birthday.day}`
+
+      fields.push({
+        inline: true,
+        name: birthday.userName,
+        value: `${dayjs(date, "M/D").format("MMMM Do")}`
+      } as APIEmbedField)
+    }
+  } else {
     fields.push({
       name: "🚫  Nothing to show",
       value: ""
     } as APIEmbedField)
-  } else {
-    BIRTHDAYS.toSorted((a: IBirthday, b: IBirthday): number => a.month - b.month || a.day - b.day).forEach(
-      (birthday: IBirthday): void => {
-        fields.push({
-          inline: true,
-          name: birthday.user_name,
-          value: `${birthday.month}/${birthday.day}`
-        } as APIEmbedField)
-      }
-    )
   }
+
   return fields
 }
 
@@ -57,19 +63,26 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
     return
   }
 
-  await interaction.reply({
-    flags: MessageFlags.Ephemeral,
-    embeds: [
-      new EmbedBuilder()
-        .setColor("#78866b")
-        .setTitle(`🎂  ${Bun.env.NAME} Birthdays  🎉`)
-        .setFields(await getFields())
-        .toJSON()
-    ]
-  })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
-  if (Bun.env.DEBUG) {
-    info("Listed birthdays")
+  try {
+    const birthdays: IBirthday[] = await DB.getBirthdays()
+
+    await interaction.editReply({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(COLOR as HexColorString)
+          .setTitle(`🎂  ${NAME} Birthdays  🎉`)
+          .setFields(getFields(birthdays))
+          .toJSON()
+      ]
+    })
+  } catch (e) {
+    const msg: string = "❌ Could not list birthdays"
+
+    error(msg, e)
+
+    await interaction.editReply({ content: `-# > ${msg}` })
   }
 }
 

@@ -1,47 +1,61 @@
+import { default as process } from "node:process"
+
+import { error, info } from "@postfmly/logger"
+import { type ILogoServerConfig, LogoServer } from "@postfmly/logoserver"
+import { type Nullable } from "@postfmly/types"
+
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 
-import { info } from "@postfmly/logger"
-import { stopLogoServer } from "@postfmly/logoserver"
+import { DB } from "./db.ts"
+import { env } from "./env.ts"
 
-import { closeDatabase } from "./db.ts"
+const { DEBUG, LOGO_NAME, LOGO_PATH, LOGO_PORT, LOGO2_NAME, LOGO2_PATH, TOKEN }: typeof env = env
 
-let CLIENT: Client | null = null
-const TEST_CLIENT: Client | null = null
+let SERVER: Nullable<LogoServer> = null
+
+let CLIENT: Nullable<Client> = null
+const TEST_CLIENT: Nullable<Client> = null
 
 let isShutdown: boolean = false
 
-const EVENTS: string[] = [
-  "SIGINT",
-  "SIGTERM"
-]
+const EVENTS: string[] = ["SIGINT", "SIGTERM"]
 
 const shutdown = async (event: string): Promise<void> => {
   if (isShutdown) {
-    if (Bun.env.DEBUG) {
-      info("Already shut down")
-    }
     return
   }
 
-  if (Bun.env.DEBUG) {
-    info(`${event} detected`)
+  if (DEBUG) {
+    info(`❌ ${event} detected`)
   }
 
-  info("Shutting down...")
+  info("🔴 Shutting down...")
 
   isShutdown = true
 
-  await closeDatabase()
-    .then(async (): Promise<void> => await Promise.resolve(CLIENT?.destroy()))
-    .then(async (): Promise<void> => await stopLogoServer())
-    .then((): void => process.exit(0))
+  await CLIENT?.destroy()
+
+  await SERVER?.stop()
+
+  DB.close()
+
+  process.exit(0)
 }
 
-const client = async (): Promise<Client> => {
+const setup = async (): Promise<Client> => {
+  SERVER = new LogoServer({
+    DEBUG,
+    LOGO_NAME,
+    LOGO_PATH,
+    LOGO_PORT,
+    LOGO2_NAME,
+    LOGO2_PATH
+  } as ILogoServerConfig)
+
+  await SERVER.start()
+
   CLIENT = new Client({
-    intents: [
-      GatewayIntentBits.Guilds
-    ],
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
     presence: {
       activities: [
         {
@@ -52,33 +66,33 @@ const client = async (): Promise<Client> => {
     }
   })
 
-  EVENTS.forEach((event: string): void => {
-    process.on(event, async (event: string): Promise<void> => {
-      await shutdown(event)
+  for (const event of EVENTS) {
+    process.on(event, (e: string): void => {
+      shutdown(e).catch((err: unknown) => {
+        error("❌ Error during shutdown", err)
+
+        process.exit(1)
+      })
     })
-  })
+  }
 
   return CLIENT
 }
 
 const login = async (): Promise<Client> => {
+  if (!CLIENT) {
+    throw new Error("❌ Invalid CLIENT")
+  }
+
   CLIENT = TEST_CLIENT ?? CLIENT
 
-  if (!CLIENT) {
-    throw new Error("Invalid CLIENT")
-  }
+  await CLIENT.login(TOKEN)
 
-  if (!Bun.env.TOKEN) {
-    throw new Error("Invalid TOKEN")
-  }
-
-  await CLIENT.login(Bun.env.TOKEN)
-
-  if (CLIENT.user && Bun.env.DEBUG) {
-    info(`Connected as ${CLIENT.user.displayName} (${CLIENT.user.tag})`)
+  if (CLIENT.user && DEBUG) {
+    info(`⚡ Connected as ${CLIENT.user.displayName} (${CLIENT.user.tag})`)
   }
 
   return CLIENT
 }
 
-export { client, login, shutdown, TEST_CLIENT }
+export { login, setup, shutdown, TEST_CLIENT }

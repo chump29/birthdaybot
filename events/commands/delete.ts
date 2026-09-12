@@ -1,5 +1,8 @@
 import { parse } from "node:path"
 
+import { checkRate } from "@postfmly/checkrate"
+import { error } from "@postfmly/logger"
+
 import {
   type ChatInputCommandInteraction,
   InteractionContextType,
@@ -9,30 +12,40 @@ import {
   SlashCommandBuilder
 } from "discord.js"
 
-import { checkRate } from "@postfmly/checkrate"
+import { DB } from "../../utils/db.ts"
 
-import { deleteBirthday } from "../../utils/loadBirthdays.ts"
-
-const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody => {
-  return new SlashCommandBuilder()
+const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody =>
+  new SlashCommandBuilder()
     .setName(parse(import.meta.file).name)
     .setDescription("Delete birthday")
     .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
     .setContexts(InteractionContextType.Guild)
     .toJSON()
-}
 
 const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> => {
   if (await checkRate(interaction)) {
     return
   }
 
-  await deleteBirthday(interaction.user.id, interaction.user.displayName).then(async (): Promise<void> => {
-    await interaction.reply({
-      content: "-# > ❌ Deleted birthday",
-      flags: MessageFlags.Ephemeral
-    })
-  })
+  const userId: string = interaction.user.id
+
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+
+  try {
+    if (!(await DB.isValidUser(userId))) {
+      await interaction.editReply({ content: "-# > ⚠️  Birthday not found" })
+
+      return
+    }
+
+    await DB.deleteBirthday(userId)
+
+    await interaction.editReply({ content: "-# > ✅ Deleted birthday" })
+  } catch (e) {
+    error(`❌ Could not delete birthday for ${interaction.user.displayName} (${userId})`, e)
+
+    await interaction.editReply({ content: "-# > ❌ Could not delete birthday" })
+  }
 }
 
 export { create, invoke }

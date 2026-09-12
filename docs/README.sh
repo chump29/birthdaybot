@@ -1,10 +1,11 @@
 #!/usr/bin/env -S bash -e
 
+export _user=chump29
+export _repo=birthdaybot
+
 echo -e "📌 Packages:\n"
 
-_bun=$(bun --version)
-bun pm pkg set packageManager="bun@$_bun" engines.bun="~$_bun" > /dev/null 2>&1
-_bun=~$_bun
+_bun=$(bun -v)
 export _bun
 echo -e " • Bun: $_bun"
 
@@ -34,11 +35,13 @@ fi
 export _sqlite
 echo -e " • SQLite: $_sqlite$_static"
 
+echo -e "\n🧪 Running tests…"
+bun run test:coverage
 
-if [ ! -f "../coverage/lcov.info" ]; then
-  bun run test > /dev/null 2>&1
+_coverage=0
+if [ -f "../tests/coverage/lcov.info" ]; then
+  _coverage=$(bun run --bun lcov-total ../tests/coverage/lcov.info)
 fi
-_coverage=$(bun run lcov-total ../coverage/lcov.info)
 export _coverage
 echo -e "\n☂️  Coverage: $_coverage%"
 

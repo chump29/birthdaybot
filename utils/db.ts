@@ -1,155 +1,146 @@
-import { mkdir, readdir } from "node:fs/promises"
-
-import { Database, SQLiteError } from "bun:sqlite"
+import { Database } from "bun:sqlite"
 
 import { info } from "@postfmly/logger"
+import { type Nullable, type Optional } from "@postfmly/types"
 
-import { eq, sql } from "drizzle-orm"
-import { drizzle, type SQLiteBunDatabase } from "drizzle-orm/bun-sqlite"
+import { and, eq } from "drizzle-orm"
+import { drizzle } from "drizzle-orm/bun-sqlite"
 import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 
 import { birthdays, type IBirthday } from "../db/schema.ts"
+import { env } from "./env.ts"
 
-let SQLITE: Database | null = null
-let TEST_SQLITE: Database | null = null
-let DB: SQLiteBunDatabase | null = null
-const TEST_DB: SQLiteBunDatabase | null = null
+const { DB_NAME, DB_PATH, DEBUG }: typeof env = env
 
-const MIN_MONTHS: number = 1
-const MAX_MONTHS: number = 12
-const MIN_DAYS: number = 1
-const MAX_DAYS: number = 31
+type DBType = ReturnType<typeof drizzle>
 
-Bun.env.DB_NAME = Bun.env.DB_NAME || "birthdaybot.db"
-Bun.env.DB_PATH = Bun.env.DB_PATH || "./db/"
+interface IBirthdayBotDatabase {
+  addBirthday: (userId: string, userName: string, month: number, day: number) => Promise<void>
+  close: () => void
+  deleteBirthday: (userId: string) => Promise<void>
+  getBirthday: (userId: string) => Promise<Optional<IBirthday>>
+  getBirthdays: () => Promise<IBirthday[]>
+  getBirthdaysToday: () => Promise<IBirthday[]>
+  isValidUser: (userId: string) => Promise<boolean>
+  open: () => void
+}
 
-const insertOrUpdate = {
-  Insert: "Added",
-  Update: "Updated"
-} as const
+class BirthdayBotDatabase implements IBirthdayBotDatabase {
+  private client: Nullable<Database> = null
+  private _db: Nullable<DBType> = null
 
-const openDatabase = async (): Promise<void> => {
-  await mkdir(Bun.env.DB_PATH, {
-    recursive: true
-  })
-
-  const DB_STR: string = `${Bun.env.DB_PATH}${Bun.env.DB_NAME}`
-
-  SQLITE = new Database(DB_STR, {
-    create: true,
-    strict: true
-  })
-
-  if (Bun.env.NODE_ENV === "test") {
-    TEST_SQLITE = SQLITE
-  }
-
-  DB =
-    TEST_DB ??
-    drizzle({
-      client: SQLITE,
-      jit: true
-    })
-  DB.run(
-    sql.raw(`
-      PRAGMA journal_mode = WAL;
-      PRAGMA wal_checkpoint(TRUNCATE);`)
-  )
-
-  try {
-    await DB.select().from(birthdays)
-  } catch (e: unknown) {
-    if (e instanceof SQLiteError && e.message.includes("no such table")) {
-      if (Bun.env.DEBUG) {
-        info("Creating tables")
+  open(): void {
+    if (this.client) {
+      if (DEBUG) {
+        info("⚠️  Database already open")
       }
 
-      await readdir(Bun.env.DB_PATH, {
-        recursive: true
-      })
-        .then((files: string[]): void => {
-          if (!files.filter((file: string): boolean => file.endsWith(".sql")).length) {
-            throw new Error("Could not find SQL script")
-          }
-        })
-        .then((): void => {
-          if (!DB) {
-            throw new Error("Database not open")
-          }
+      return
+    }
 
-          migrate(DB, {
-            migrationsFolder: Bun.env.DB_PATH
-          })
-        })
-    } else {
-      throw e
+    const dbPathName: string = `${DB_PATH}/${DB_NAME}`
+
+    this.client = new Database(dbPathName, {
+      create: true,
+      strict: true
+    })
+
+    this.client.run(`
+      PRAGMA busy_timeout = 3000;
+      PRAGMA foreign_keys = 1;
+      PRAGMA journal_mode = WAL;
+      PRAGMA synchronous = NORMAL;
+      PRAGMA wal_checkpoint(TRUNCATE);
+    `)
+
+    this._db = drizzle({
+      client: this.client,
+      jit: true
+    })
+
+    migrate(this._db, {
+      migrationsFolder: DB_PATH
+    })
+
+    if (DEBUG) {
+      info(`▶️  Using database: ${dbPathName}`)
     }
   }
 
-  if (Bun.env.DEBUG) {
-    info(`Using database: ${DB_STR}`)
-  }
-}
-
-const addBirthday = async (userId: string, userName: string, month: number, day: number): Promise<string> => {
-  if (!DB) {
-    throw new Error("Database not open")
-  }
-
-  const [birthday]: IBirthday[] = await DB.insert(birthdays)
-    .values({
-      day: day,
-      month: month,
-      user_id: userId,
-      user_name: userName
-    })
-    .onConflictDoUpdate({
-      target: birthdays.user_id,
-      set: {
-        day: day,
-        is_updated: true,
-        month: month
+  close(): void {
+    if (!this.client) {
+      if (DEBUG) {
+        info("⚠️  Database already closed")
       }
+
+      return
+    }
+
+    this.client?.close()
+
+    this.client = null
+    this._db = null
+
+    if (DEBUG) {
+      info("⏹️  Database closed")
+    }
+  }
+
+  private dbCheck(): DBType {
+    if (!this._db) {
+      throw new Error("Database not open")
+    }
+
+    return this._db
+  }
+
+  // * /birthday <month> <day>
+  async addBirthday(userId: string, userName: string, month: number, day: number): Promise<void> {
+    await this.dbCheck().insert(birthdays).values({ userId, userName, day, month }).onConflictDoUpdate({
+      set: { day, month },
+      target: birthdays.userId
     })
-    .returning()
-
-  return birthday?.is_updated ? insertOrUpdate.Update : insertOrUpdate.Insert
-}
-
-const deleteBirthday = async (userId: string): Promise<void> => {
-  if (!DB) {
-    throw new Error("Database not open")
   }
 
-  await DB.delete(birthdays).where(eq(birthdays.user_id, userId))
-}
+  async isValidUser(userId: string): Promise<boolean> {
+    const [birthday] = await this.dbCheck()
+      .select({ userId: birthdays.userId })
+      .from(birthdays)
+      .where(eq(birthdays.userId, userId))
+      .limit(1)
 
-const getBirthdays = async (): Promise<IBirthday[]> => {
-  if (!DB) {
-    throw new Error("Database not open")
+    return Boolean(birthday)
   }
 
-  return await DB.select().from(birthdays)
-}
+  // * /delete
+  async deleteBirthday(userId: string): Promise<void> {
+    await this.dbCheck().delete(birthdays).where(eq(birthdays.userId, userId))
+  }
 
-const closeDatabase = async (): Promise<void> => {
-  SQLITE?.close()
+  // * /show
+  async getBirthday(userId: string): Promise<Optional<IBirthday>> {
+    const [birthday] = await this.dbCheck().select().from(birthdays).where(eq(birthdays.userId, userId)).limit(1)
 
-  if (Bun.env.DEBUG) {
-    info("Database closed")
+    return birthday
+  }
+
+  // * /list
+  async getBirthdays(): Promise<IBirthday[]> {
+    return await this.dbCheck().select().from(birthdays)
+  }
+
+  async getBirthdaysToday(): Promise<IBirthday[]> {
+    const date: Date = new Date()
+    const month: number = date.getMonth() + 1
+    const day: number = date.getDate()
+
+    return await this.dbCheck()
+      .select()
+      .from(birthdays)
+      .where(and(eq(birthdays.month, month), eq(birthdays.day, day)))
   }
 }
 
-export {
-  addBirthday,
-  closeDatabase,
-  deleteBirthday,
-  getBirthdays,
-  MAX_DAYS,
-  MAX_MONTHS,
-  MIN_DAYS,
-  MIN_MONTHS,
-  openDatabase,
-  TEST_DB,
-  TEST_SQLITE
-}
+const DB: IBirthdayBotDatabase = new BirthdayBotDatabase()
+
+export { DB }

@@ -8,8 +8,6 @@ services:
     volumes:
       - db:/app/db
     environment:
-      - LOGO_NAME=birthdaybot.webp
-      - LOGO_PATH=./utils/images
       - LOGO2_NAME=birthday.webp
       - LOGO2_PATH=./utils/images
       - LOGO_PORT=8007

@@ -1,5 +1,8 @@
 import { parse } from "node:path"
 
+import { checkRate } from "@postfmly/checkrate"
+import { error } from "@postfmly/logger"
+
 import {
   type ChatInputCommandInteraction,
   InteractionContextType,
@@ -9,26 +12,36 @@ import {
   SlashCommandBuilder
 } from "discord.js"
 
-import { checkRate } from "@postfmly/checkrate"
+import { env } from "../../utils/env.ts"
 
-const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody => {
-  return new SlashCommandBuilder()
+const { NAME }: typeof env = env
+
+const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody =>
+  new SlashCommandBuilder()
     .setName(parse(import.meta.file).name)
-    .setDescription(`Ping ${Bun.env.NAME}`)
+    .setDescription(`Ping ${NAME}`)
     .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
     .setContexts(InteractionContextType.Guild)
     .toJSON()
-}
 
 const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> => {
   if (await checkRate(interaction)) {
     return
   }
 
-  await interaction.reply({
-    content: `-# > **Pong!** ⚡ Your latency is: \`${Date.now() - interaction.createdTimestamp}ms\``,
-    flags: MessageFlags.Ephemeral
-  })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+
+  try {
+    await interaction.editReply({
+      content: `-# > **Pong!** ⚡ Your latency is: \`${Date.now() - interaction.createdTimestamp}ms\``
+    })
+  } catch (e) {
+    const msg: string = `❌ Could not ping ${NAME}`
+
+    error(msg, e)
+
+    await interaction.editReply({ content: `-# > ${msg}` })
+  }
 }
 
 export { create, invoke }

@@ -5,14 +5,15 @@
 ---
 
 ![Bun](https://img.shields.io/badge/Bun-$_bun-informational?style=plastic&logo=bun "Bun") &nbsp;
-![discord.js](https://img.shields.io/badge/discord.js-$_discord-informational?style=plastic&logo=discord.js "discord.js") &nbsp;
-![Drizzle](https://img.shields.io/badge/Drizzle-$_drizzle-informational?style=plastic&logo=drizzle "Drizzle")
+![discord.js](https://img.shields.io/badge/discord.js-$_discord-informational?style=plastic&logo=discord.js "discord.js") &nbsp; <!-- markdownlint-disable-line MD013 -->
+![Drizzle](https://img.shields.io/badge/Drizzle-$_drizzle-informational?style=plastic&logo=drizzle "Drizzle") &nbsp;
 ![SQLite](https://img.shields.io/badge/SQLite-$_sqlite-informational?style=plastic&logo=sqlite "SQLite")
 
-![CodeQL](https://github.com/chump29/birthdaybot/workflows/CodeQL/badge.svg "CodeQL") &nbsp;
+![CodeQL](https://github.com/$_user/$_repo/workflows/CodeQL/badge.svg "CodeQL") &nbsp;
 ![Coverage](https://img.shields.io/badge/Coverage-$_coverage%25-success?style=plastic&logo=jest "Coverage")
 
-![License](https://img.shields.io/github/license/chump29/birthdaybot?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3")
+![NO AI](https://img.shields.io/badge/NO-AI-orange?style=plastic "NO AI") &nbsp;
+![License](https://img.shields.io/github/license/$_user/$_repo?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3")
 
 ---
 
@@ -44,70 +45,13 @@
 
 |       📋 Task       |        🔧 Command         | ⚙️ Permission |
 |:-------------------:|:-------------------------:|:-------------:|
-|    Add Birthday     | `/birthday [month] [day]` | SendMessages  |
+|    Add Birthday     | `/birthday <month> <day>` | SendMessages  |
 |   Delete Birthday   |         `/delete`         | SendMessages  |
 |        Info         |          `/info`          | SendMessages  |
-|   List Birthdays    |          `/list`          | SendMessages  |
+| List All Birthdays  |          `/list`          | Administrator |
 |        Ping         |          `/ping`          | SendMessages  |
-| Wish Happy Birthday |      `/wish [user]`       | Administrator |
-
----
-
-### 🛠️ Environment Management
-
-#### NPM ([Bun](https://github.com/oven-sh/bun "Bun") toolkit):
-
-| 📋 Task |  🔧 Command   |
-|:-------:|:-------------:|
-| Upgrade | `bun upgrade` |
-
----
-
-### 📦 Dependency Management
-
-#### Installation & Removal:
-
-|        📋 Task         |            🔧 Command (Full)             |           🔧 Command (Short)           |
-|:----------------------:|:----------------------------------------:|:--------------------------------------:|
-|      Install DEV       |              `bun install`               |                `bun i`                 |
-|      Install PROD      |        `bun install --production`        |               `bun i -p`               |
-|     Add dependency     |      `bun add [package][@version]`       |      `bun a [package][@version]`       |
-|   Add devDependency    | `bun add --save-dev [package][@version]` |     `bun a -d [package][@version]`     |
-| Add optionalDependency | `bun add --optional [package][@version]` | `bun a --optional [package][@version]` |
-|   Add peerDependency   |   `bun add --peer [package][@version]`   |   `bun a --peer [package][version]`    |
-|       Add Global       |  `bun add --global [package][@version]`  |     `bun a -g [package][@version]`     |
-|   Remove Dependency    |          `bun remove [package]`          |           `bun r [package]`            |
-
-#### Maintenance & Quality:
-
-|     📋 Task     |   🔧 Command (Full)    | 🔧 Command (Short)  |
-|:---------------:|:----------------------:|:-------------------:|
-|  Check Updates  |     `bun outdated`     |       &mdash;       |
-|   Update All    |      `bun update`      |       &mdash;       |
-| Update Specific | `bun update [package]` |       &mdash;       |
-| Security Audit  |      `bun audit`       |       &mdash;       |
-|  Package Info   |  `bun info [package]`  |       &mdash;       |
-|   Run Script    |   `bun run [script]`   |   `bun [script]`    |
-|      List       |       `bun list`       |       &mdash;       |
-|   List Extra    |    `bun list --all`    |       &mdash;       |
-|    Hierarchy    | `bun pm why [package]` | `bun why [package]` |
-
----
-
-### 🧪 Development
-
-#### Scripts:
-
-|    📋 Task     |  🔧 Command (Full)   | 🔧 Command (Short) |
-|:--------------:|:--------------------:|:------------------:|
-| Lint All (DEV) |    `bun run lint`    |     `bun lint`     |
-| Lint All (CI)  |  `bun run lint:ci`   |   `bun lint:ci`    |
-|   Lint Biome   | `bun run lint:biome` |  `bun lint:biome`  |
-|    Lint ENV    |  `bun run lint:env`  |   `bun lint:env`   |
-|    Run DEV     |    `bun run dev`     |     `bun dev`      |
-|    Run PROD    |    `bun run prod`    |     `bun prod`     |
-|      Test      |    `bun run test`    |       &mdash       |
-|  Generate SQL  |    `bun run sql`     |     `bun sql`      |
+|    Show Birthday    |          `/show`          | SendMessages  |
+| Wish Happy Birthday |      `/wish <user>`       | Administrator |
 
 ---
 
@@ -115,28 +59,31 @@
 
 #### Environment Variables:
 
-| 📝 Description | 📌 Variable |  {...} Value   |
-|:--------------:|:-----------:|:--------------:|
-|   Channel ID   | CHANNEL_ID  |      [id]      |
-|    DB Name     |   DB_NAME   | birthdaybot.db |
-|    DB Path     |   DB_PATH   |     ./db/      |
-|     Debug      |  IS_DEBUG   | true/**false** |
-|   Server ID    |  GUILD_ID   |      [id]      |
-|    Logo URL    |  LOGO_URL   |     [url]      |
-|    Bot Name    |    NAME     |  BirthdayBot   |
-|    Role ID     |   ROLE_ID   |      [id]      |
-|   Bot Token    |    TOKEN    |    [token]     |
+| 📝 Description | 📌 Variable |    {...} Value     |
+|:--------------:|:-----------:|:------------------:|
+|   Channel ID   | CHANNEL_ID  |       \<id>        |
+|  Embed Color   |    COLOR    | 78866b<sup>1</sup> |
+|    DB Name     |   DB_NAME   |   birthdaybot.db   |
+|    DB Path     |   DB_PATH   |       ./db/        |
+|     Debug      |    DEBUG    |   true/**false**   |
+|   Server ID    |  GUILD_ID   |       \<id>        |
+|    Logo URL    |  LOGO_URL   |       \<url>       |
+|    Bot Name    |    NAME     |    BirthdayBot     |
+|    Role ID     |   ROLE_ID   |       \<id>        |
+|   Bot Token    |    TOKEN    |      \<token>      |
+
+###### <sup>1</sup> RRGGBB <!-- markdownlint-disable-line MD001 -->
 
 ##### From `@postfmly/logoserver`:
 
 |  📝 Description   | 📌 Variable |    {...} Value    |
 |:-----------------:|:-----------:|:-----------------:|
 |     IPv4/IPv6     |  LOGO_IPv6  |  true/**false**   |
-|     Logo Name     |  LOGO_NAME  |    [filename]     |
-|    Local Path     |  LOGO_PATH  |      [path]       |
-|       Port        |  LOGO_PORT  | **Random**/[port] |
-|    Logo 2 Name    | LOGO2_NAME  |    [filename]     |
-| Logo 2 Local Path | LOGO2_PATH  |      [path]       |
+|     Logo Name     |  LOGO_NAME  |   soberbot.webp   |
+|    Local Path     |  LOGO_PATH  |  ./utils/images   |
+|       Port        |  LOGO_PORT  | **random**/[port] |
+|    Logo 2 Name    | LOGO2_NAME  |    \<filename>    |
+| Logo 2 Local Path | LOGO2_PATH  |      \<path>      |
 
 ##### From `@postfmly/checkrate`:
 

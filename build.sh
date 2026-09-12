@@ -21,7 +21,7 @@ echo -e "\n${_lint} ${_yellow}Linting${_nc}:\n"
 bun run lint
 
 echo -e "\n${_test} ${_yellow}Testing${_nc}:\n"
-bun run test
+bun run test:coverage
 
 ./docker.sh
 

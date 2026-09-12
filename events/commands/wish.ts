@@ -1,19 +1,21 @@
 import { parse } from "node:path"
 
+import { error } from "@postfmly/logger"
+
 import {
   type ChatInputCommandInteraction,
+  InteractionContextType,
   MessageFlags,
   PermissionFlagsBits,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
   SlashCommandBuilder,
-  type SlashCommandUserOption,
-  type User
+  type SlashCommandUserOption
 } from "discord.js"
 
-import { doBirthdays } from "../../utils/loadBirthdays.ts"
+import { handleBirthdays } from "../../utils/loadBirthdays.ts"
 
-const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody => {
-  return new SlashCommandBuilder()
+const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody =>
+  new SlashCommandBuilder()
     .setName(parse(import.meta.file).name)
     .setDescription("Wish a Happy Birthday")
     .addUserOption(
@@ -21,25 +23,21 @@ const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody => {
         option.setName("user").setDescription("User").setRequired(true)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    .setContexts(InteractionContextType.Guild)
     .toJSON()
-}
 
 const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-  const user: User | null = interaction.options.getUser("user")
-  if (!user) {
-    throw new Error("Invalid user")
-  }
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
-  if (!interaction.channel || !interaction.guild) {
-    throw new Error("Invalid channel/guild")
-  }
+  try {
+    await handleBirthdays(interaction)
+  } catch (e) {
+    const msg: string = "❌ Could not wish birthday"
 
-  await doBirthdays(user).then(async (): Promise<void> => {
-    await interaction.reply({
-      content: `Wished \`${user.displayName}\` a Happy Birthday and added Birthday role`,
-      flags: MessageFlags.Ephemeral
-    })
-  })
+    error(msg, e)
+
+    await interaction.editReply({ content: `-# > ${msg}` })
+  }
 }
 
 export { create, invoke }

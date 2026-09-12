@@ -1,11 +1,18 @@
+import { default as process } from "node:process"
+
+import { error, info } from "@postfmly/logger"
+import { type Nullable, type Optional } from "@postfmly/types"
+
 import {
   type Channel,
+  ChannelType,
   type ChatInputCommandInteraction,
   type Client,
-  DiscordAPIError,
   EmbedBuilder,
   type Guild,
   type GuildMember,
+  type HexColorString,
+  type Message,
   MessageFlags,
   type Role,
   type TextChannel,
@@ -13,176 +20,251 @@ import {
   userMention
 } from "discord.js"
 
-import { error, info } from "@postfmly/logger"
-
-import { default as ordinal } from "ordinal"
-import { default as pluralize } from "pluralize"
-
 import { type IBirthday } from "../db/schema.ts"
-import { addBirthday as addBirthdayDB, deleteBirthday as deleteBirthdayDB, getBirthdays } from "./db.ts"
-import { default as months } from "./months.ts"
+import { version } from "../package.json" with { type: "json" }
+import { DB } from "./db.ts"
+import { env } from "./env.ts"
 
-let CLIENT: Client | null = null
-let CHANNEL: TextChannel | null = null
+const { CHANNEL_ID, COLOR, DEBUG, GUILD_ID, LOGO_URL, LOGO2_URL, NAME, ROLE_ID }: typeof env = env
 
-let BIRTHDAYS: IBirthday[] = []
-let COUNT: number = 0
+interface ITaskData {
+  member: Optional<GuildMember>
+  success: boolean
+  userId: Optional<string>
+}
 
-const UNKNOWN_MEMBER: number = 10007
+let CLIENT: Nullable<Client> = null
+let CHANNEL: Nullable<TextChannel> = null
+let GUILD: Nullable<Guild> = null
+let ROLE: Nullable<Role> = null
 
-const getChannel = async (): Promise<TextChannel> => {
+const getChannel = async (client: Client): Promise<void> => {
+  CLIENT = client
+
+  const channel: Nullable<Channel> = await CLIENT.channels.fetch(CHANNEL_ID)
+  if (!channel || channel.type !== ChannelType.GuildText) {
+    throw new Error("Invalid channel")
+  }
+
+  CHANNEL = channel as TextChannel
+}
+
+const getGuild = async (): Promise<Guild> => {
   if (!CLIENT) {
     throw new Error("Invalid CLIENT")
   }
 
-  const channelId: string = Bun.env.CHANNEL_ID
-  if (!channelId) {
-    throw new Error("Invalid CHANNEL_ID")
-  }
+  const guild: Guild = await CLIENT.guilds.fetch(GUILD_ID)
 
-  return await CLIENT.channels.fetch(channelId).then((channel: Channel | null): TextChannel => {
-    if (!channel) {
-      throw new Error("Invalid channel")
-    }
+  GUILD = guild
 
-    return channel as TextChannel
-  })
+  return guild
 }
 
-const refreshBirthdays = async (): Promise<void> => {
-  BIRTHDAYS = await getBirthdays()
-  COUNT = BIRTHDAYS.length
-
-  if (Bun.env.DEBUG) {
-    info(`Loaded ${pluralize("birthday", COUNT, true)}`)
+const getRole = async (): Promise<void> => {
+  const role: Nullable<Role> = (await GUILD?.roles.fetch(ROLE_ID)) ?? null
+  if (!role) {
+    throw new Error("Role not found")
   }
+
+  ROLE = role
 }
 
 const loadSettings = async (client: Client): Promise<void> => {
-  CLIENT = client
-  CHANNEL = await getChannel()
+  await getChannel(client)
 
-  await refreshBirthdays()
-}
+  const guild: Guild = await getGuild()
 
-const addBirthday = async (interaction: ChatInputCommandInteraction): Promise<string> => {
-  const month: number = interaction.options.getInteger("month") as number
-  const day: number = interaction.options.getInteger("day") as number
+  await guild.members.fetch()
 
-  const insertOrUpdate: string = await addBirthdayDB(
-    interaction.user.id,
-    interaction.user.displayName,
-    month,
-    day
-  ).then(async (insertOrUpdate: string): Promise<string> => {
-    await refreshBirthdays()
-    return insertOrUpdate
+  await getRole()
+
+  process.on("unhandledRejection", (e) => error(e))
+
+  Bun.cron("@midnight", async (): Promise<void> => {
+    try {
+      if (DEBUG) {
+        info("🛈  Handling birthdays...")
+      }
+
+      await handleBirthdays()
+    } catch (e) {
+      error(e)
+    }
   })
 
-  if (Bun.env.DEBUG) {
-    info(`${insertOrUpdate} birthday of ${months[month]} ${ordinal(day)} for ${interaction.user.displayName}`)
-  }
-
-  return insertOrUpdate
-}
-
-const deleteBirthday = async (userId: string, name: string | null = null): Promise<void> => {
-  await deleteBirthdayDB(userId).then(async (): Promise<void> => await refreshBirthdays())
-
-  if (Bun.env.DEBUG) {
-    info(`Deleted birthday for ${name ?? userId}`)
+  if (DEBUG) {
+    info("🔨 Settings loaded")
   }
 }
 
-const doBirthdays = async (user: User | null = null): Promise<void> => {
-  if (!CLIENT) {
-    throw new Error("Invalid CLIENT")
+const handleErrors = (results: PromiseSettledResult<unknown>[]): void => {
+  for (const result of results) {
+    if (result.status === "rejected") {
+      error(`Error: ${result.reason}`)
+    }
+  }
+}
+
+const handleBirthdays = async (i: Nullable<ChatInputCommandInteraction> = null): Promise<void> => {
+  if (!ROLE) {
+    throw new Error("Invalid ROLE")
   }
 
-  const guildId: string = Bun.env.GUILD_ID
-  if (!guildId) {
-    throw new Error("Invalid GUILD_ID")
+  const role_: Role = ROLE // scope
+
+  if (!GUILD) {
+    throw new Error("Invalid GUILD")
   }
 
-  const guild: Guild = await (CLIENT as Client).guilds.fetch(guildId)
+  const guild_: Guild = GUILD // scope
 
-  const roleId: string = Bun.env.ROLE_ID
-  if (!roleId) {
-    throw new Error("Invalid ROLE_ID")
+  let birthdays: IBirthday[]
+  if (i) {
+    const u: Nullable<User> = i.options.getUser("user")
+    if (!u) {
+      throw new Error("Invalid user")
+    }
+
+    const m: Optional<GuildMember> = guild_.members.cache.find(
+      (member: GuildMember): boolean => member.user.displayName.toLowerCase() === u.displayName.toLowerCase()
+    )
+    if (!m) {
+      await i.editReply({ content: "-# > ❌ Member not found" })
+
+      return
+    }
+
+    const date: Date = new Date()
+
+    birthdays = [
+      { day: date.getDate(), month: date.getMonth() + 1, userId: m.id, userName: m.displayName } as IBirthday
+    ] as IBirthday[]
+
+    await i.editReply({ content: `Wishing \`${m.displayName}\` a Happy Birthday and added Birthday role` })
+  } else {
+    birthdays = await DB.getBirthdaysToday()
+
+    if (birthdays.length === 0) {
+      if (DEBUG) {
+        const date: string = new Intl.DateTimeFormat("en-US", { day: "2-digit", month: "2-digit" }).format(new Date())
+        info(`🛈  No birthdays found for ${date}`)
+      }
+
+      return
+    }
   }
 
-  const role: Role | null = await guild.roles.fetch(roleId)
-  if (!role) {
-    throw new Error("Invalid role")
-  }
+  const isBirthday: GuildMember[] = []
+  const toAddRole: GuildMember[] = []
+  const toRemoveRole: GuildMember[] = []
+  const toDelete: string[] = []
 
-  await Promise.all(
-    BIRTHDAYS.map(async (birthday: IBirthday): Promise<void> => {
-      const date: Date = new Date()
+  const memberTasks: Promise<ITaskData>[] = birthdays.map(async (birthday: IBirthday): Promise<ITaskData> => {
+    const userId: string = birthday.userId
 
-      let member: GuildMember = {} as GuildMember
+    let member: Nullable<GuildMember> = guild_.members.cache.get(userId) ?? null
+
+    if (!member) {
       try {
-        const userId: string = user?.id ?? birthday.user_id
-        member = await guild.members.fetch(userId).catch(async (e: unknown): Promise<never> => {
-          if (e instanceof DiscordAPIError && e.code === UNKNOWN_MEMBER) {
-            await deleteBirthday(userId)
-          }
-          throw e
-        })
-      } catch (e: unknown) {
-        error(e)
-        return
+        member = await guild_.members.fetch(userId)
+      } catch {
+        return { userId, success: false } as ITaskData
       }
+    }
 
-      let isBirthday: boolean = false
-      if (user || (birthday.month === date.getMonth() + 1 && birthday.day === date.getDate())) {
-        isBirthday = true
+    return { member, success: true } as ITaskData
+  })
 
-        if (!member.roles.cache.has(role.id)) {
-          await member.roles.add(role)
+  const taskResults: ITaskData[] = await Promise.all(memberTasks)
 
-          if (Bun.env.DEBUG) {
-            info(`Added Birthday role to ${member.displayName}`)
-          }
+  for (const data of taskResults) {
+    if (data.success && data.member) {
+      isBirthday.push(data.member)
+
+      if (!data.member.roles.cache.has(role_.id)) {
+        if (data.member.user.id === guild_.ownerId) {
+          info("🛈  Not altering server owner roles")
+        } else {
+          toAddRole.push(data.member)
         }
+      }
+    } else if (!data.success && data.userId) {
+      toDelete.push(data.userId)
+    }
+  }
+
+  const birthdayIds: Set<string> = new Set(isBirthday.map((member: GuildMember): string => member.id))
+
+  for (const member of ROLE.members.values()) {
+    if (!birthdayIds.has(member.id)) {
+      if (member.user.id === guild_.ownerId) {
+        info("🛈  Not altering server owner roles")
       } else {
-        isBirthday = false
+        toRemoveRole.push(member)
+      }
+    }
+  }
 
-        await member.roles.remove(role)
+  for (const [k, v] of Object.entries({ isBirthday, toAddRole, toDelete, toRemoveRole })) {
+    if (v.length > 0) {
+      info(`🛈  ${k}: ${v.length}`)
+    }
+  }
 
-        if (Bun.env.DEBUG) {
-          info(`Removed Birthday role from ${member.displayName}`)
-        }
+  if (!CHANNEL) {
+    throw new Error("Invalid CHANNEL")
+  }
+
+  const channel_: TextChannel = CHANNEL // scope
+
+  await Promise.allSettled([
+    ...isBirthday.map((member: GuildMember): Promise<Message<true>> => {
+      if (DEBUG) {
+        info(`🛈  Wishing ${member.displayName} a Happy Birthday`)
       }
 
-      if (isBirthday) {
-        await CHANNEL?.send({
-          content: userMention(member.id),
-          flags: MessageFlags.SuppressNotifications,
-          embeds: [
-            new EmbedBuilder()
-              .setColor("#78866b")
-              .setAuthor({
-                iconURL: Bun.env.LOGO_URL,
-                name: `${Bun.env.NAME} v${Bun.env.npm_package_version}`
-              })
-              .setImage(Bun.env.LOGO2_URL)
-              .setTitle("🎂  HAPPY BIRTHDAY  🎉")
-              .setFooter({
-                iconURL: member.displayAvatarURL(),
-                text: member.displayName
-              })
-          ]
-        })
+      return channel_.send({
+        content: userMention(member.id),
+        flags: MessageFlags.SuppressNotifications,
+        embeds: [
+          new EmbedBuilder()
+            .setColor(COLOR as HexColorString)
+            .setAuthor({
+              iconURL: LOGO_URL,
+              name: `${NAME} v${version}`
+            })
+            .setImage(LOGO2_URL)
+            .setTitle("🎂  HAPPY BIRTHDAY  🎉")
+            .setFooter({
+              iconURL: member.displayAvatarURL(),
+              text: member.displayName
+            })
+        ]
+      })
+    }),
+    ...toAddRole.map((member: GuildMember): Promise<GuildMember> => {
+      if (DEBUG) {
+        info(`🛈  Added Birthday role to ${member.displayName}`)
       }
+
+      return member.roles.add(role_)
+    }),
+    ...toRemoveRole.map((member: GuildMember): Promise<GuildMember> => {
+      if (DEBUG) {
+        info(`🛈  Removed Birthday role from ${member.displayName}`)
+      }
+
+      return member.roles.remove(role_)
+    }),
+    ...toDelete.map((userId: string): Promise<void> => {
+      if (DEBUG) {
+        info(`🛈  Deleted ${userId}`)
+      }
+
+      return DB.deleteBirthday(userId)
     })
-  )
+  ]).then((results): void => handleErrors(results))
 }
 
-const handleBirthdays = async (): Promise<void> => {
-  process.on("unhandledRejection", (e: unknown) => error(e))
-
-  Bun.cron("@midnight", async (): Promise<void> => await doBirthdays())
-}
-
-export { addBirthday, BIRTHDAYS, COUNT, deleteBirthday, doBirthdays, handleBirthdays, loadSettings, refreshBirthdays }
+export { handleBirthdays, loadSettings }
