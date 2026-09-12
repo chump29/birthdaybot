@@ -72,7 +72,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
     await interaction.editReply({
       content: `-# > 🎂  Birthday set to ${dayjs(date, "M/D").format("MMMM Do")}  🎉`
     })
-  } catch (e) {
+  } catch (e: unknown) {
     error(`❌ Could not add birthday for ${interaction.user.displayName} (${interaction.user.id})`, e)
 
     await interaction.editReply({ content: "-# > ❌ Could not add birthday" })

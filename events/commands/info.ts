@@ -45,7 +45,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
           .setFooter({ text: `By ${author.name}` })
       ]
     })
-  } catch (e) {
+  } catch (e: unknown) {
     const msg: string = `❌ Could not get info for ${NAME}`
 
     error(msg, e)

@@ -35,7 +35,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
     await interaction.editReply({
       content: `-# > **Pong!** ⚡ Your latency is: \`${Date.now() - interaction.createdTimestamp}ms\``
     })
-  } catch (e) {
+  } catch (e: unknown) {
     const msg: string = `❌ Could not ping ${NAME}`
 
     error(msg, e)

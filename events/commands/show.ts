@@ -74,7 +74,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
           .toJSON()
       ]
     })
-  } catch (e) {
+  } catch (e: unknown) {
     const msg: string = "❌ Could not list birthdays"
 
     error(msg, e)

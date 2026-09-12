@@ -15,7 +15,7 @@ try {
   info("Running...")
 
   await handleBirthdays()
-} catch (e) {
+} catch (e: unknown) {
   error(e)
 
   shutdown("ERROR")

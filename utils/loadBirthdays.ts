@@ -88,7 +88,7 @@ const loadSettings = async (client: Client): Promise<void> => {
       }
 
       await handleBirthdays()
-    } catch (e) {
+    } catch (e: unknown) {
       error(e)
     }
   })

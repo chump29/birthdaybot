@@ -31,7 +31,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
 
   try {
     await handleBirthdays(interaction)
-  } catch (e) {
+  } catch (e: unknown) {
     const msg: string = "❌ Could not wish birthday"
 
     error(msg, e)

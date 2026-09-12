@@ -41,7 +41,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
     await DB.deleteBirthday(userId)
 
     await interaction.editReply({ content: "-# > ✅ Deleted birthday" })
-  } catch (e) {
+  } catch (e: unknown) {
     error(`❌ Could not delete birthday for ${interaction.user.displayName} (${userId})`, e)
 
     await interaction.editReply({ content: "-# > ❌ Could not delete birthday" })

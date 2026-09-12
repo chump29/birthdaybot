@@ -15,7 +15,7 @@ const loadCommands = async (client: Client): Promise<void> => {
   client.on(Events.InteractionCreate, async (interaction: Interaction): Promise<void> => {
     try {
       await interactionCreate.invoke(interaction)
-    } catch (e) {
+    } catch (e: unknown) {
       error(`❌ ${interaction.isCommand() ? interaction.commandName : "Unknown"}:`, e)
     }
   })
