@@ -21,7 +21,7 @@ const {
   NAME,
   ROLE_ID,
   TOKEN
-}: typeof env = env
+} = env as typeof env
 
 describe("env", (): void => {
   test("CHANNEL_ID", (): void => {

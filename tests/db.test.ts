@@ -18,7 +18,7 @@ import {
 import { DB } from "../utils/db.ts"
 import { env } from "../utils/env.ts"
 
-const { DB_NAME, DB_PATH }: typeof env = env
+const { DB_NAME, DB_PATH } = env as typeof env
 
 const infoSpy: jest.Mock = spyOn(console, "info")
 

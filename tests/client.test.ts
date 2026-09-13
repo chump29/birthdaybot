@@ -3,20 +3,12 @@ import { default as process } from "node:process"
 import { beforeAll, describe, expect, jest, mock, spyOn, test } from "bun:test"
 
 import { simpleFaker as fake } from "@faker-js/faker"
-import {
-  type ActivitiesOptions,
-  ActivityType,
-  type Client,
-  type ClientUser,
-  GatewayIntentBits,
-  type IntentsBitField,
-  type PresenceData
-} from "discord.js"
+import { type Client, type ClientUser } from "discord.js"
 
-import { login, setup, shutdown } from "../utils/client.ts"
+import { init, shutdown } from "../utils/client.ts"
 import { env } from "../utils/env.ts"
 
-const { NAME }: typeof env = env
+const { NAME } = env as typeof env
 
 const infoSpy: jest.Mock = spyOn(console, "info")
 
@@ -45,35 +37,9 @@ describe("client", (): void => {
     shutdown("TEST") // * NOTE: to test isShutdown
   })
 
-  test("login fail - client", (): void => {
-    expect(login()).rejects.toThrowError("Invalid CLIENT")
-  })
+  test("init", async (): Promise<void> => {
+    infoSpy.mockClear()
 
-  test("client", async (): Promise<void> => {
-    const onSpy: jest.Mock = spyOn(process, "on")
-
-    const clientObj: Client = await setup()
-
-    const intents: IntentsBitField = clientObj.options.intents
-    expect(intents).not.toBeUndefined()
-    expect(intents.has(GatewayIntentBits.Guilds)).toBeTrue()
-    expect(intents.has(GatewayIntentBits.GuildMembers)).toBeTrue()
-
-    const presence: PresenceData = clientObj.options.presence as PresenceData
-    const activities: ActivitiesOptions[] = presence.activities as ActivitiesOptions[]
-    expect(activities).not.toBeUndefined()
-    expect(activities).toHaveLength(1)
-    expect(activities[0]?.name).toBe("Partying...")
-    expect(activities[0]?.type).toBe(ActivityType.Custom)
-
-    process.emit("SIGINT")
-    expect(onSpy).toHaveBeenNthCalledWith(1, "SIGINT", expect.any(Function))
-
-    process.emit("SIGTERM")
-    expect(onSpy).toHaveBeenNthCalledWith(2, "SIGTERM", expect.any(Function))
-  })
-
-  test("login", async (): Promise<void> => {
     const tag: string = `${NAME}#${fake.string.numeric({ allowLeadingZeros: false, length: 4 })}`
 
     mock.module("../utils/client.ts", (): unknown => ({
@@ -86,13 +52,20 @@ describe("client", (): void => {
       } as unknown as Client
     }))
 
-    infoSpy.mockClear()
+    const onSpy: jest.Mock = spyOn(process, "on")
 
-    const client: Client = await login()
+    await init()
 
-    expect(client.user?.displayName).toBe(NAME)
-    expect(client.user?.tag).toBe(tag)
+    const count: number = 5
 
-    expect(infoSpy).toHaveBeenCalledTimes(2)
+    expect(infoSpy).toHaveBeenCalledTimes(count)
+    expect(infoSpy).toHaveBeenNthCalledWith(count, expect.any(String), expect.stringContaining(NAME))
+    expect(infoSpy).toHaveBeenNthCalledWith(count, expect.any(String), expect.stringContaining(tag))
+
+    process.emit("SIGINT")
+    expect(onSpy).toHaveBeenNthCalledWith(1, "SIGINT", expect.any(Function))
+
+    process.emit("SIGTERM")
+    expect(onSpy).toHaveBeenNthCalledWith(2, "SIGTERM", expect.any(Function))
   })
 })

@@ -5,6 +5,7 @@ import { error } from "@postfmly/logger"
 
 import { default as dayjs } from "dayjs"
 import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
+import { default as customParseFormat } from "dayjs/plugin/customParseFormat"
 import {
   type APIEmbedField,
   type ChatInputCommandInteraction,
@@ -22,8 +23,9 @@ import { DB } from "../../utils/db.ts"
 import { env } from "../../utils/env.ts"
 
 dayjs.extend(advancedFormat)
+dayjs.extend(customParseFormat)
 
-const { COLOR, NAME }: typeof env = env
+const { COLOR, NAME } = env as typeof env
 
 const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody =>
   new SlashCommandBuilder()

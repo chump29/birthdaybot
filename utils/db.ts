@@ -10,7 +10,7 @@ import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 import { birthdays, type IBirthday } from "../db/schema.ts"
 import { env } from "./env.ts"
 
-const { DB_NAME, DB_PATH, DEBUG }: typeof env = env
+const { DB_NAME, DB_PATH, DEBUG } = env as typeof env
 
 type DBType = ReturnType<typeof drizzle>
 

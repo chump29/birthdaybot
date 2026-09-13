@@ -6,10 +6,11 @@ import { type Nullable } from "@postfmly/types"
 
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 
+import { loadCommands } from "../events/loadCommands.ts"
 import { DB } from "./db.ts"
 import { env } from "./env.ts"
 
-const { DEBUG, LOGO_NAME, LOGO_PATH, LOGO_PORT, LOGO2_NAME, LOGO2_PATH, TOKEN }: typeof env = env
+const { DEBUG, LOGO_NAME, LOGO_PATH, LOGO_PORT, LOGO2_NAME, LOGO2_PATH, TOKEN } = env as typeof env
 
 let SERVER: Nullable<LogoServer> = null
 
@@ -17,8 +18,6 @@ let CLIENT: Nullable<Client> = null
 const TEST_CLIENT: Nullable<Client> = null
 
 let isShutdown: boolean = false
-
-const EVENTS: string[] = ["SIGINT", "SIGTERM"]
 
 const shutdown = async (event: string): Promise<void> => {
   if (isShutdown) {
@@ -42,7 +41,21 @@ const shutdown = async (event: string): Promise<void> => {
   process.exit(0)
 }
 
-const setup = async (): Promise<Client> => {
+const login = async (): Promise<void> => {
+  if (!CLIENT) {
+    throw new Error("❌ Invalid CLIENT")
+  }
+
+  CLIENT = TEST_CLIENT ?? CLIENT
+
+  await CLIENT.login(TOKEN)
+
+  if (CLIENT.user && DEBUG) {
+    info(`⚡ Connected as ${CLIENT.user.displayName} (${CLIENT.user.tag})`)
+  }
+}
+
+const init = async (): Promise<Client> => {
   SERVER = new LogoServer({
     DEBUG,
     LOGO_NAME,
@@ -66,7 +79,7 @@ const setup = async (): Promise<Client> => {
     }
   })
 
-  for (const event of EVENTS) {
+  for (const event of ["SIGINT", "SIGTERM"]) {
     process.on(event, (e: string): void => {
       shutdown(e).catch((err: unknown) => {
         error("❌ Error during shutdown", err)
@@ -76,23 +89,11 @@ const setup = async (): Promise<Client> => {
     })
   }
 
-  return CLIENT
-}
+  await loadCommands(CLIENT)
 
-const login = async (): Promise<Client> => {
-  if (!CLIENT) {
-    throw new Error("❌ Invalid CLIENT")
-  }
-
-  CLIENT = TEST_CLIENT ?? CLIENT
-
-  await CLIENT.login(TOKEN)
-
-  if (CLIENT.user && DEBUG) {
-    info(`⚡ Connected as ${CLIENT.user.displayName} (${CLIENT.user.tag})`)
-  }
+  await login()
 
   return CLIENT
 }
 
-export { login, setup, shutdown, TEST_CLIENT }
+export { init, shutdown, TEST_CLIENT }

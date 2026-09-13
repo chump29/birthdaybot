@@ -11,7 +11,7 @@ interface ICommandFile {
   create: () => Promise<RESTPostAPIChatInputApplicationCommandsJSONBody>
 }
 
-const { DEBUG }: typeof env = env
+const { DEBUG } = env as typeof env
 
 const invoke = async (client: Client): Promise<void> => {
   if (!(client.application && client.user)) {

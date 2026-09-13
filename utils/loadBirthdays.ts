@@ -25,7 +25,7 @@ import { version } from "../package.json" with { type: "json" }
 import { DB } from "./db.ts"
 import { env } from "./env.ts"
 
-const { CHANNEL_ID, COLOR, DEBUG, GUILD_ID, LOGO_URL, LOGO2_URL, NAME, ROLE_ID }: typeof env = env
+const { CHANNEL_ID, COLOR, DEBUG, GUILD_ID, LOGO_URL, LOGO2_URL, NAME, ROLE_ID } = env as typeof env
 
 interface ITaskData {
   member: Optional<GuildMember>
@@ -70,7 +70,7 @@ const getRole = async (): Promise<void> => {
   ROLE = role
 }
 
-const loadSettings = async (client: Client): Promise<void> => {
+const initBirthdays = async (client: Client): Promise<void> => {
   await getChannel(client)
 
   const guild: Guild = await getGuild()
@@ -267,4 +267,4 @@ const handleBirthdays = async (i: Nullable<ChatInputCommandInteraction> = null):
   ]).then((results): void => handleErrors(results))
 }
 
-export { handleBirthdays, loadSettings }
+export { handleBirthdays, initBirthdays }

@@ -17,7 +17,7 @@ import {
 import { author, version } from "../../package.json" with { type: "json" }
 import { env } from "../../utils/env.ts"
 
-const { COLOR, LOGO_URL, NAME }: typeof env = env
+const { COLOR, LOGO_URL, NAME } = env as typeof env
 
 const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody =>
   new SlashCommandBuilder()
