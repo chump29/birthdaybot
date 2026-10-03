@@ -21,7 +21,7 @@
   "type": "module",
   "scripts": {
     "check": "bunx --bun depcheck --ignores=\"@postfmly/config,@types/*,bun:*,lcov-total\"",
-    "dev": "bun --watch run index.ts",
+    "dev": "bun run --bun --watch index.ts",
     "preinstall": "bunx --bun only-allow bun",
     "lint": "bun run scan && bun run lint:spell && bun run lint:biome && bun run lint:env && bun run lint:ts",
     "lint:biome": "bun run --bun biome check --write --verbose --reporter=default --reporter=github --error-on-warnings",
@@ -30,7 +30,7 @@
     "lint:spell": "bun run --bun cspell --dot --verbose .",
     "lint:ts": "bun run --bun tsc",
     "prepare": "bun run --bun .husky/prepare.min.mjs",
-    "prod": "bun run index.ts",
+    "prod": "bun run --bun index.ts",
     "scan": "bun audit && bunx --bun cve-lite-cli --check-overrides",
     "scan:e18e": "bunx --bun @e18e/cli analyze",
     "sql": "drizzle-kit generate",
@@ -69,7 +69,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
-    "@postfmly/config": "^1.5.8",
+    "@postfmly/config": "^1.6.0",
     "drizzle-kit": "1.0.0-rc.4",
     "expect-type": "^1.4.0",
     "husky": "^9.1.7",
