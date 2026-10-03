@@ -5,7 +5,7 @@ export _repo=birthdaybot
 
 echo -e "📌 Packages:\n"
 
-_bun=$(bun -v)
+_bun=$(bun --version)
 export _bun
 echo -e " • Bun: $_bun"
 

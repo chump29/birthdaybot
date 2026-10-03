@@ -59,29 +59,26 @@
 
 #### Environment Variables:
 
-| 📝 Description | 📌 Variable |    {...} Value     |
-|:--------------:|:-----------:|:------------------:|
-|   Channel ID   | CHANNEL_ID  |       \<id>        |
-|  Embed Color   |    COLOR    | 78866b<sup>1</sup> |
-|    DB Name     |   DB_NAME   |   birthdaybot.db   |
-|    DB Path     |   DB_PATH   |       ./db/        |
-|     Debug      |    DEBUG    |   true/**false**   |
-|   Server ID    |  GUILD_ID   |       \<id>        |
-|    Logo URL    |  LOGO_URL   |       \<url>       |
-|    Bot Name    |    NAME     |    BirthdayBot     |
-|    Role ID     |   ROLE_ID   |       \<id>        |
-|   Bot Token    |    TOKEN    |      \<token>      |
-
-###### <sup>1</sup> RRGGBB <!-- markdownlint-disable-line MD001 -->
+| 📝 Description | 📌 Variable |  {...} Value   |
+|:--------------:|:-----------:|:--------------:|
+|   Channel ID   | CHANNEL_ID  |     \<id>      |
+|  Embed Color   |    COLOR    |    #78866b     |
+|    DB Name     |   DB_NAME   | birthdaybot.db |
+|    DB Path     |   DB_PATH   |     ./db/      |
+|     Debug      |    DEBUG    | true/**false** |
+|   Server ID    |  GUILD_ID   |     \<id>      |
+|    Bot Name    |    NAME     |  BirthdayBot   |
+|    Role ID     |   ROLE_ID   |     \<id>      |
+|   Bot Token    |    TOKEN    |    \<token>    |
 
 ##### From `@postfmly/logoserver`:
 
 |  📝 Description   | 📌 Variable |    {...} Value    |
 |:-----------------:|:-----------:|:-----------------:|
-|     IPv4/IPv6     |  LOGO_IPv6  |  true/**false**   |
 |     Logo Name     |  LOGO_NAME  |   soberbot.webp   |
 |    Local Path     |  LOGO_PATH  |  ./utils/images   |
 |       Port        |  LOGO_PORT  | **random**/[port] |
+|     Logo URL      |  LOGO_URL   |      \<url>       |
 |    Logo 2 Name    | LOGO2_NAME  |    \<filename>    |
 | Logo 2 Local Path | LOGO2_PATH  |      \<path>      |
 
