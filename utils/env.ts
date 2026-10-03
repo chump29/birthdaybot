@@ -1,6 +1,12 @@
-import { bool, cleanEnv, type ExactValidator, makeExactValidator, url } from "envalid"
+#!/usr/bin/env bun
+
+import { type Optional } from "@postfmly/types"
+
+import { bool, cleanEnv, type ExactValidator, makeExactValidator, str, url } from "envalid"
+import { anyOf, caseInsensitive, createRegExp, wordChar } from "magic-regexp"
 import {
   digits,
+  hexColor,
   integer,
   literal,
   maxLength,
@@ -12,72 +18,94 @@ import {
   pipe,
   regex,
   string,
-  toLowerCase,
   toNumber,
   trim,
   union
 } from "valibot"
 
 const MIN_ID_LEN: number = 17
-const MAX_ID_LEN: number = 20
-
-const MAX_ROLE_ID_LEN: number = 19
+const MAX_ID_LEN: number = 19
 
 const MIN_PORT: number = 1024
 const MAX_PORT: number = 65_535
 
-const StringSchema = pipe(string(), trim(), nonEmpty())
-const ChannelIdSchema = pipe(StringSchema, digits(), minLength(MIN_ID_LEN), maxLength(MAX_ID_LEN))
-const ColorSchema = pipe(StringSchema, regex(/[\da-f]{6}/i))
-const GuildIdSchema = pipe(StringSchema, digits(), minLength(MIN_ID_LEN), maxLength(MAX_ID_LEN))
-const PortSchema = union([
-  pipe(StringSchema, toLowerCase(), literal("random")),
-  pipe(StringSchema, digits(), toNumber(), integer(), minValue(MIN_PORT), maxValue(MAX_PORT))
-])
-const RoleIdSchema = pipe(StringSchema, digits(), minLength(MIN_ID_LEN), maxLength(MAX_ROLE_ID_LEN))
-const TokenSchema = pipe(StringSchema, regex(/^[\w-]{24,26}\.[\w-]{6}\.[\w-]{25,110}$/))
+const UID_MIN_LEN: number = 23
+const UID_MAX_LEN: number = 28
+const TS_MIN_LEN: number = 6
+const TS_MAX_LEN: number = 7
+const HMAC_MIN_LEN: number = 27
+const HMAC_MAX_LEN: number = 38
 
-const channelIdValidator: ExactValidator<string> = makeExactValidator<string>((s: string): string =>
-  parse(ChannelIdSchema, s)
+const StringSchema = pipe(string(), trim(), nonEmpty())
+const IdSchema = pipe(StringSchema, digits(), minLength(MIN_ID_LEN), maxLength(MAX_ID_LEN))
+const ColorSchema = pipe(StringSchema, hexColor())
+const PortSchema = union([
+  pipe(literal("random")),
+  pipe(StringSchema, toNumber(), integer(), minValue(MIN_PORT), maxValue(MAX_PORT))
+])
+const TokenSchema = pipe(
+  StringSchema,
+  regex(
+    createRegExp(
+      anyOf(wordChar, "-").times.between(UID_MIN_LEN, UID_MAX_LEN).at.lineStart(),
+      ".",
+      anyOf(wordChar, "-").times.between(TS_MIN_LEN, TS_MAX_LEN),
+      ".",
+      anyOf(wordChar, "-").times.between(HMAC_MIN_LEN, HMAC_MAX_LEN).at.lineEnd(),
+      [caseInsensitive]
+    )
+  )
 )
+
+const idValidator: ExactValidator<string> = makeExactValidator<string>((s: string): string => parse(IdSchema, s))
 const colorValidator: ExactValidator<string> = makeExactValidator<string>((s: string): string => parse(ColorSchema, s))
-const guildIdValidator: ExactValidator<string> = makeExactValidator<string>((s: string): string =>
-  parse(GuildIdSchema, s)
-)
-const roleIdValidator: ExactValidator<string> = makeExactValidator<string>((s: string): string =>
-  parse(RoleIdSchema, s)
-)
-const stringValidator: ExactValidator<string> = makeExactValidator<string>((s: string): string =>
-  parse(StringSchema, s)
-)
 const portValidator: ExactValidator<"random" | number> = makeExactValidator<"random" | number>(
   (s: string): "random" | number => parse(PortSchema, s)
 )
 const tokenValidator: ExactValidator<string> = makeExactValidator<string>((s: string): string => parse(TokenSchema, s))
 
-const getRandomString = (): string => {
-  const Base36: number = 36
+let getFakeId = (): string => "Implemented during testing"
+let getFakeURL = (): string => "Implemented during testing"
 
-  return Math.random().toString(Base36).slice(2)
+let fakeToken: Optional<string>
+
+if (Bun.env.NODE_ENV === "test") {
+  const { fakerEN_US: fake } = await import("@faker-js/faker")
+
+  let chars: string = "[0-9]"
+  getFakeId = (): string => fake.helpers.fromRegExp(`${chars}{${MIN_ID_LEN},${MAX_ID_LEN}}`)
+
+  getFakeURL = (): string => fake.internet.url()
+
+  chars = "[a-zA-Z0-9]"
+  fakeToken = fake.helpers.fromRegExp(
+    `${chars}{${UID_MIN_LEN},${UID_MAX_LEN}}[.]${chars}{${TS_MIN_LEN},${TS_MAX_LEN}}[.]${chars}{${HMAC_MIN_LEN},${HMAC_MAX_LEN}}`
+  )
 }
 
 const env = cleanEnv(Bun.env, {
-  CHANNEL_ID: channelIdValidator({ testDefault: getRandomString() }),
-  COLOR: colorValidator({ default: "78866b" }),
-  DB_NAME: stringValidator({ default: "birthdaybot.db", testDefault: "birthdaybot.test.db" }),
-  DB_PATH: stringValidator({ default: "./db" }),
+  CHANNEL_ID: idValidator({ testDefault: getFakeId() }),
+  COLOR: colorValidator({ default: "#78866b" }),
+  DB_NAME: str({ default: "birthdaybot.db", testDefault: "birthdaybot.test.db" }),
+  DB_PATH: str({ default: "./db" }),
   DEBUG: bool({ default: false, testDefault: true }),
-  GUILD_ID: guildIdValidator({ testDefault: getRandomString() }),
-  LOGO_NAME: stringValidator({ default: "birthdaybot.webp" }),
-  LOGO_PATH: stringValidator({ default: "./utils/images" }),
+  GUILD_ID: idValidator({ testDefault: getFakeId() }),
+  LOGO_NAME: str({ default: "birthdaybot.webp" }),
+  LOGO_PATH: str({ default: "./utils/images" }),
   LOGO_PORT: portValidator({ default: "random" }),
-  LOGO_URL: url({ testDefault: "my.url" }),
-  LOGO2_NAME: stringValidator({ default: "birthday.webp" }),
-  LOGO2_PATH: stringValidator({ default: "./utils/images" }),
-  LOGO2_URL: url({ testDefault: "my.url2" }),
-  NAME: stringValidator({ default: "BirthdayBot" }),
-  ROLE_ID: roleIdValidator({ testDefault: getRandomString() }),
-  TOKEN: tokenValidator({ testDefault: getRandomString() })
+  LOGO_URL: url({ testDefault: getFakeURL() }),
+  LOGO2_NAME: str({ default: "birthday.webp" }),
+  LOGO2_PATH: str({ default: "./utils/images" }),
+  LOGO2_URL: url({ testDefault: getFakeURL() }),
+  NAME: str({ default: "BirthdayBot" }),
+  ROLE_ID: idValidator({ testDefault: getFakeId() }),
+  TOKEN: tokenValidator({ testDefault: fakeToken })
 })
+
+if (import.meta.main) {
+  const { styleText } = await import("node:util")
+  const REDACTED: string = styleText("red", "[REDACTED]")
+  console.table({ ...env, CHANNEL_ID: REDACTED, GUILD_ID: REDACTED, ROLE_ID: REDACTED, TOKEN: REDACTED })
+}
 
 export { env }

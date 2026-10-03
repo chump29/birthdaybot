@@ -1,6 +1,5 @@
 import { parse } from "node:path"
 
-import { checkRate } from "@postfmly/checkrate"
 import { error } from "@postfmly/logger"
 
 import { default as dayjs } from "dayjs"
@@ -24,8 +23,6 @@ import { env } from "../../utils/env.ts"
 
 dayjs.extend(advancedFormat)
 dayjs.extend(customParseFormat)
-
-const { COLOR, NAME } = env as typeof env
 
 const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody =>
   new SlashCommandBuilder()
@@ -61,10 +58,6 @@ const getFields = (birthdays: IBirthday[]): APIEmbedField[] => {
 }
 
 const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-  if (await checkRate(interaction)) {
-    return
-  }
-
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
   try {
@@ -73,8 +66,8 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
     await interaction.editReply({
       embeds: [
         new EmbedBuilder()
-          .setColor(COLOR as HexColorString)
-          .setTitle(`🎂  ${NAME} Birthdays  🎉`)
+          .setColor(env.COLOR as HexColorString)
+          .setTitle(`🎂  ${env.NAME} Birthdays  🎉`)
           .setFields(getFields(birthdays))
           .toJSON()
       ]

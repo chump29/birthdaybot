@@ -1,6 +1,5 @@
 import { parse } from "node:path"
 
-import { checkRate } from "@postfmly/checkrate"
 import { error } from "@postfmly/logger"
 import { type Optional } from "@postfmly/types"
 
@@ -14,25 +13,22 @@ import {
   type HexColorString,
   InteractionContextType,
   MessageFlags,
-  PermissionFlagsBits,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
   SlashCommandBuilder
 } from "discord.js"
 
 import { type IBirthday } from "../../db/schema.ts"
+import { bucket } from "../../utils/bucket.ts"
 import { DB } from "../../utils/db.ts"
 import { env } from "../../utils/env.ts"
 
 dayjs.extend(advancedFormat)
 dayjs.extend(customParseFormat)
 
-const { COLOR } = env as typeof env
-
 const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody =>
   new SlashCommandBuilder()
     .setName(parse(import.meta.file).name)
     .setDescription("Show birthday")
-    .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
     .setContexts(InteractionContextType.Guild)
     .toJSON()
 
@@ -58,11 +54,13 @@ const getFields = (birthday: Optional<IBirthday>): APIEmbedField[] => {
 }
 
 const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-  if (await checkRate(interaction)) {
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+
+  if (!bucket.allow(interaction.user.username)) {
+    await interaction.editReply({ content: "❌ Rate limit exceeded" })
+
     return
   }
-
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
   try {
     const birthday: Optional<IBirthday> = await DB.getBirthday(interaction.user.id)
@@ -70,7 +68,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
     await interaction.editReply({
       embeds: [
         new EmbedBuilder()
-          .setColor(COLOR as HexColorString)
+          .setColor(env.COLOR as HexColorString)
           .setTitle(`🎂  ${interaction.user.displayName}'s Birthday  🎉`)
           .setFields(getFields(birthday))
           .toJSON()

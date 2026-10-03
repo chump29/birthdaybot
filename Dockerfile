@@ -4,16 +4,22 @@ FROM oven/bun:alpine AS build
 
 WORKDIR /app
 
-COPY . .
-
 ENV BUN_INSTALL_CACHE_DIR=/.bun-cache
 
+COPY .husky/prepare.min.mjs ./.husky/
+COPY package.json bun.lock ./
+
 RUN --mount=type=cache,target=/.bun-cache \
-  bun install --frozen-lockfile --ignore-scripts --production
+  bun ci --production
 
 # -=-
 
 FROM oven/bun:alpine
+
+# hadolint ignore=DL3018
+RUN apk add --no-cache \
+  tzdata \
+  sqlite
 
 WORKDIR /app
 
@@ -23,12 +29,12 @@ LABEL org.opencontainers.image.authors="Chris Post <admin@postfmly.com>" \
   org.opencontainers.image.title="BirthdayBot" \
   org.opencontainers.image.url="https://github.com/chump29/birthdaybot"
 
-# hadolint ignore=DL3018
-RUN apk add --no-cache tzdata sqlite
-
-COPY --from=build /app /app/
-
 ENV TZ=Etc/GMT
+
+COPY --from=build /app/node_modules ./node_modules
+COPY package.json ./
+
+COPY . .
 
 HEALTHCHECK --interval=60s CMD source healthcheck.sh
 

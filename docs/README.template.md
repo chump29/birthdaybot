@@ -43,15 +43,15 @@
 
 #### Commands:
 
-|       📋 Task       |        🔧 Command         | ⚙️ Permission |
-|:-------------------:|:-------------------------:|:-------------:|
-|    Add Birthday     | `/birthday <month> <day>` | SendMessages  |
-|   Delete Birthday   |         `/delete`         | SendMessages  |
-|        Info         |          `/info`          | SendMessages  |
-| List All Birthdays  |          `/list`          | Administrator |
-|        Ping         |          `/ping`          | SendMessages  |
-|    Show Birthday    |          `/show`          | SendMessages  |
-| Wish Happy Birthday |      `/wish <user>`       | Administrator |
+|       📋 Task       |        🔧 Command         | ⚙️ Member Permission |
+|:-------------------:|:-------------------------:|:--------------------:|
+|    Add Birthday     | `/birthday <month> <day>` |         None         |
+|   Delete Birthday   |         `/delete`         |         None         |
+|        Info         |          `/info`          |         None         |
+| List All Birthdays  |          `/list`          |    Administrator     |
+|        Ping         |          `/ping`          |         None         |
+|    Show Birthday    |          `/show`          |         None         |
+| Wish Happy Birthday |      `/wish <user>`       |    Administrator     |
 
 ---
 
@@ -87,9 +87,7 @@
 
 ##### From `@postfmly/checkrate`:
 
-| 📝 Description | 📌 Variable | {...} Value |
-|:--------------:|:-----------:|:-----------:|
-|   Rate Limit   |    RATE     |     1s      |
+###### *NOTE: Rate limited to 1 request per 1 second*
 
 #### Deployment:
 

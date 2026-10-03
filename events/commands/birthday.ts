@@ -1,6 +1,5 @@
 import { parse } from "node:path"
 
-import { checkRate } from "@postfmly/checkrate"
 import { error } from "@postfmly/logger"
 
 import { default as dayjs } from "dayjs"
@@ -10,7 +9,6 @@ import {
   type ChatInputCommandInteraction,
   InteractionContextType,
   MessageFlags,
-  PermissionFlagsBits,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
   SlashCommandBuilder,
   type SlashCommandIntegerOption
@@ -18,6 +16,7 @@ import {
 import { type SafeParseResult, safeParse } from "valibot"
 
 import { BirthdaySchema, type IBirthday, MAX_DAYS, MAX_MONTHS, MIN_DAYS, MIN_MONTHS } from "../../db/schema.ts"
+import { bucket } from "../../utils/bucket.ts"
 import { DB } from "../../utils/db.ts"
 
 dayjs.extend(advancedFormat)
@@ -40,16 +39,17 @@ const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody =>
       (option: SlashCommandIntegerOption): SlashCommandIntegerOption =>
         option.setName("day").setDescription("Day").setMinValue(MIN_DAYS).setMaxValue(MAX_DAYS).setRequired(true)
     )
-    .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
     .setContexts(InteractionContextType.Guild)
     .toJSON()
 
 const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-  if (await checkRate(interaction)) {
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+
+  if (!bucket.allow(interaction.user.username)) {
+    await interaction.editReply({ content: "❌ Rate limit exceeded" })
+
     return
   }
-
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
   const userId: string = interaction.user.id
   const userName: string = interaction.user.displayName

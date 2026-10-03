@@ -10,7 +10,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-3.49.2-informational?style=plastic&logo=sqlite "SQLite")
 
 ![CodeQL](https://github.com/chump29/birthdaybot/workflows/CodeQL/badge.svg "CodeQL") &nbsp;
-![Coverage](https://img.shields.io/badge/Coverage-86.28%25-success?style=plastic&logo=jest "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-85.9%25-success?style=plastic&logo=jest "Coverage")
 
 ![NO AI](https://img.shields.io/badge/NO-AI-orange?style=plastic "NO AI") &nbsp;
 ![License](https://img.shields.io/github/license/chump29/birthdaybot?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3")
@@ -43,15 +43,15 @@
 
 #### Commands:
 
-|       📋 Task       |        🔧 Command         | ⚙️ Permission |
-|:-------------------:|:-------------------------:|:-------------:|
-|    Add Birthday     | `/birthday <month> <day>` | SendMessages  |
-|   Delete Birthday   |         `/delete`         | SendMessages  |
-|        Info         |          `/info`          | SendMessages  |
-| List All Birthdays  |          `/list`          | Administrator |
-|        Ping         |          `/ping`          | SendMessages  |
-|    Show Birthday    |          `/show`          | SendMessages  |
-| Wish Happy Birthday |      `/wish <user>`       | Administrator |
+|       📋 Task       |        🔧 Command         | ⚙️ Member Permission |
+|:-------------------:|:-------------------------:|:--------------------:|
+|    Add Birthday     | `/birthday <month> <day>` |         None         |
+|   Delete Birthday   |         `/delete`         |         None         |
+|        Info         |          `/info`          |         None         |
+| List All Birthdays  |          `/list`          |    Administrator     |
+|        Ping         |          `/ping`          |         None         |
+|    Show Birthday    |          `/show`          |         None         |
+| Wish Happy Birthday |      `/wish <user>`       |    Administrator     |
 
 ---
 
@@ -87,9 +87,7 @@
 
 ##### From `@postfmly/checkrate`:
 
-| 📝 Description | 📌 Variable | {...} Value |
-|:--------------:|:-----------:|:-----------:|
-|   Rate Limit   |    RATE     |     1s      |
+###### *NOTE: Rate limited to 1 request per 1 second*
 
 #### Deployment:
 

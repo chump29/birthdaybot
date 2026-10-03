@@ -1,3 +1,5 @@
+import { join } from "node:path"
+
 import { Database } from "bun:sqlite"
 
 import { info } from "@postfmly/logger"
@@ -10,11 +12,10 @@ import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 import { birthdays, type IBirthday } from "../db/schema.ts"
 import { env } from "./env.ts"
 
-const { DB_NAME, DB_PATH, DEBUG } = env as typeof env
-
 type DBType = ReturnType<typeof drizzle>
 
 interface IBirthdayBotDatabase {
+  _db: Nullable<DBType>
   addBirthday: (userId: string, userName: string, month: number, day: number) => Promise<void>
   close: () => void
   deleteBirthday: (userId: string) => Promise<void>
@@ -27,18 +28,18 @@ interface IBirthdayBotDatabase {
 
 class BirthdayBotDatabase implements IBirthdayBotDatabase {
   private client: Nullable<Database> = null
-  private _db: Nullable<DBType> = null
+  _db: Nullable<DBType> = null
 
   open(): void {
     if (this.client) {
-      if (DEBUG) {
+      if (env.DEBUG) {
         info("⚠️  Database already open")
       }
 
       return
     }
 
-    const dbPathName: string = `${DB_PATH}/${DB_NAME}`
+    const dbPathName: string = join(env.DB_PATH, env.DB_NAME)
 
     this.client = new Database(dbPathName, {
       create: true,
@@ -59,17 +60,17 @@ class BirthdayBotDatabase implements IBirthdayBotDatabase {
     })
 
     migrate(this._db, {
-      migrationsFolder: DB_PATH
+      migrationsFolder: env.DB_PATH
     })
 
-    if (DEBUG) {
+    if (env.DEBUG) {
       info(`▶️  Using database: ${dbPathName}`)
     }
   }
 
   close(): void {
     if (!this.client) {
-      if (DEBUG) {
+      if (env.DEBUG) {
         info("⚠️  Database already closed")
       }
 
@@ -81,7 +82,7 @@ class BirthdayBotDatabase implements IBirthdayBotDatabase {
     this.client = null
     this._db = null
 
-    if (DEBUG) {
+    if (env.DEBUG) {
       info("⏹️  Database closed")
     }
   }

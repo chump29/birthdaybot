@@ -1,4 +1,5 @@
 import { glob, unlink } from "node:fs/promises"
+import { join } from "node:path"
 
 import { afterAll, beforeAll, describe, expect, type jest, spyOn, test } from "bun:test"
 
@@ -18,12 +19,10 @@ import {
 import { DB } from "../utils/db.ts"
 import { env } from "../utils/env.ts"
 
-const { DB_NAME, DB_PATH } = env as typeof env
-
 const infoSpy: jest.Mock = spyOn(console, "info")
 
 const deleteFiles = async (): Promise<void> => {
-  for await (const file of glob(`${DB_PATH}/${DB_NAME}*`)) {
+  for await (const file of glob(join(env.DB_PATH, `${env.DB_NAME}*`))) {
     await unlink(file)
   }
 }

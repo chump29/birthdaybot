@@ -25,8 +25,6 @@ import { version } from "../package.json" with { type: "json" }
 import { DB } from "./db.ts"
 import { env } from "./env.ts"
 
-const { CHANNEL_ID, COLOR, DEBUG, GUILD_ID, LOGO_URL, LOGO2_URL, NAME, ROLE_ID } = env as typeof env
-
 interface ITaskData {
   member: Optional<GuildMember>
   success: boolean
@@ -34,6 +32,7 @@ interface ITaskData {
 }
 
 let CLIENT: Nullable<Client> = null
+
 let CHANNEL: Nullable<TextChannel> = null
 let GUILD: Nullable<Guild> = null
 let ROLE: Nullable<Role> = null
@@ -41,7 +40,7 @@ let ROLE: Nullable<Role> = null
 const getChannel = async (client: Client): Promise<void> => {
   CLIENT = client
 
-  const channel: Nullable<Channel> = await CLIENT.channels.fetch(CHANNEL_ID)
+  const channel: Nullable<Channel> = await CLIENT.channels.fetch(env.CHANNEL_ID)
   if (!channel || channel.type !== ChannelType.GuildText) {
     throw new Error("Invalid channel")
   }
@@ -54,7 +53,7 @@ const getGuild = async (): Promise<Guild> => {
     throw new Error("Invalid CLIENT")
   }
 
-  const guild: Guild = await CLIENT.guilds.fetch(GUILD_ID)
+  const guild: Guild = await CLIENT.guilds.fetch(env.GUILD_ID)
 
   GUILD = guild
 
@@ -62,7 +61,7 @@ const getGuild = async (): Promise<Guild> => {
 }
 
 const getRole = async (): Promise<void> => {
-  const role: Nullable<Role> = (await GUILD?.roles.fetch(ROLE_ID)) ?? null
+  const role: Nullable<Role> = (await GUILD?.roles.fetch(env.ROLE_ID)) ?? null
   if (!role) {
     throw new Error("Role not found")
   }
@@ -83,7 +82,7 @@ const initBirthdays = async (client: Client): Promise<void> => {
 
   Bun.cron("@midnight", async (): Promise<void> => {
     try {
-      if (DEBUG) {
+      if (env.DEBUG) {
         info("🛈  Handling birthdays...")
       }
 
@@ -93,7 +92,7 @@ const initBirthdays = async (client: Client): Promise<void> => {
     }
   })
 
-  if (DEBUG) {
+  if (env.DEBUG) {
     info("🔨 Settings loaded")
   }
 }
@@ -146,7 +145,7 @@ const handleBirthdays = async (i: Nullable<ChatInputCommandInteraction> = null):
     birthdays = await DB.getBirthdaysToday()
 
     if (birthdays.length === 0) {
-      if (DEBUG) {
+      if (env.DEBUG) {
         const date: string = new Intl.DateTimeFormat("en-US", { day: "2-digit", month: "2-digit" }).format(new Date())
         info(`🛈  No birthdays found for ${date}`)
       }
@@ -220,7 +219,7 @@ const handleBirthdays = async (i: Nullable<ChatInputCommandInteraction> = null):
 
   await Promise.allSettled([
     ...isBirthday.map((member: GuildMember): Promise<Message<true>> => {
-      if (DEBUG) {
+      if (env.DEBUG) {
         info(`🛈  Wishing ${member.displayName} a Happy Birthday`)
       }
 
@@ -229,12 +228,12 @@ const handleBirthdays = async (i: Nullable<ChatInputCommandInteraction> = null):
         flags: MessageFlags.SuppressNotifications,
         embeds: [
           new EmbedBuilder()
-            .setColor(COLOR as HexColorString)
+            .setColor(env.COLOR as HexColorString)
             .setAuthor({
-              iconURL: LOGO_URL,
-              name: `${NAME} v${version}`
+              iconURL: env.LOGO_URL,
+              name: `${env.NAME} v${version}`
             })
-            .setImage(LOGO2_URL)
+            .setImage(env.LOGO2_URL)
             .setTitle("🎂  HAPPY BIRTHDAY  🎉")
             .setFooter({
               iconURL: member.displayAvatarURL(),
@@ -244,21 +243,21 @@ const handleBirthdays = async (i: Nullable<ChatInputCommandInteraction> = null):
       })
     }),
     ...toAddRole.map((member: GuildMember): Promise<GuildMember> => {
-      if (DEBUG) {
+      if (env.DEBUG) {
         info(`🛈  Added Birthday role to ${member.displayName}`)
       }
 
       return member.roles.add(role_)
     }),
     ...toRemoveRole.map((member: GuildMember): Promise<GuildMember> => {
-      if (DEBUG) {
+      if (env.DEBUG) {
         info(`🛈  Removed Birthday role from ${member.displayName}`)
       }
 
       return member.roles.remove(role_)
     }),
     ...toDelete.map((userId: string): Promise<void> => {
-      if (DEBUG) {
+      if (env.DEBUG) {
         info(`🛈  Deleted ${userId}`)
       }
 
@@ -267,4 +266,4 @@ const handleBirthdays = async (i: Nullable<ChatInputCommandInteraction> = null):
   ]).then((results): void => handleErrors(results))
 }
 
-export { handleBirthdays, initBirthdays }
+export { CLIENT, handleBirthdays, initBirthdays }

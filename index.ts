@@ -9,7 +9,7 @@ try {
 
   await initBirthdays(await init())
 
-  info("Running...")
+  info("🟢 Running...")
 } catch (e: unknown) {
   error(e)
 
