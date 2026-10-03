@@ -1,5 +1,6 @@
 *
 
+!.husky/prepare.min.mjs
 !bun.lock
 !db/
 !env.ts
@@ -8,7 +9,6 @@
 !index.ts
 !package.json
 !patches/
-!prepare.min.mjs
 !tsconfig.json
 !utils/
 
