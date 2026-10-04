@@ -32,7 +32,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
   try {
     await handleBirthdays(interaction)
 
-    await interaction.editReply({ content: `-# > 🎉 Wished ${interaction.user.username} a Happy Birthday` })
+    await interaction.editReply({ content: `-# > 🎉 Wished \`${interaction.user.username}\` a Happy Birthday` })
   } catch (e: unknown) {
     const msg: string = "❌ Could not wish birthday"
 
