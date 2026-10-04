@@ -17,7 +17,7 @@ const TEST_CLIENT: Nullable<Client> = null
 
 let isShutdown: boolean = false
 
-const shutdown = async (event: string): Promise<void> => {
+const shutdown = async (event: string = "ERROR"): Promise<void> => {
   if (isShutdown) {
     return
   }

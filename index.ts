@@ -13,5 +13,5 @@ try {
 } catch (e: unknown) {
   error(e)
 
-  await shutdown("ERROR")
+  await shutdown()
 }
