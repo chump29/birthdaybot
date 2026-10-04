@@ -21,7 +21,6 @@ import {
 } from "discord.js"
 
 import { type IBirthday } from "../db/schema.ts"
-import { version } from "../package.json" with { type: "json" }
 import { DB } from "./db.ts"
 import { env } from "./env.ts"
 
@@ -229,10 +228,6 @@ const handleBirthdays = async (i: Nullable<ChatInputCommandInteraction> = null):
         embeds: [
           new EmbedBuilder()
             .setColor(env.COLOR as HexColorString)
-            .setAuthor({
-              iconURL: env.LOGO_URL,
-              name: `${env.NAME} v${version}`
-            })
             .setImage(env.LOGO2_URL)
             .setTitle("🎂  HAPPY BIRTHDAY  🎉")
             .setFooter({
