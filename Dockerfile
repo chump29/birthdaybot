@@ -32,8 +32,6 @@ LABEL org.opencontainers.image.authors="Chris Post <admin@postfmly.com>" \
 ENV TZ=Etc/GMT
 
 COPY --from=build /app/node_modules ./node_modules
-COPY package.json ./
-
 COPY . .
 
 HEALTHCHECK --interval=60s CMD source healthcheck.sh
