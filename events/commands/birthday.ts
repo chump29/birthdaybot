@@ -62,7 +62,9 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
 
     const b: SafeParseResult<BirthdaySchema> = safeParse(BirthdaySchema, birthday)
     if (!b.success) {
-      throw new Error("Invalid birthday")
+      await interaction.editReply({ content: "❌ Invalid birthday" })
+
+      return
     }
 
     await DB.addBirthday(userId, userName, month, day)
