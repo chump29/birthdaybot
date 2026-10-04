@@ -46,7 +46,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
   if (!bucket.allow(interaction.user.username)) {
-    await interaction.editReply({ content: "❌ Rate limit exceeded" })
+    await interaction.editReply({ content: "-# > ❌ Rate limit exceeded" })
 
     return
   }
@@ -62,7 +62,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
 
     const b: SafeParseResult<BirthdaySchema> = safeParse(BirthdaySchema, birthday)
     if (!b.success) {
-      await interaction.editReply({ content: "❌ Invalid birthday" })
+      await interaction.editReply({ content: "-# > ❌ Invalid birthday" })
 
       return
     }
