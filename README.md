@@ -10,7 +10,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-3.49.2-informational?style=plastic&logo=sqlite "SQLite")
 
 ![CodeQL](https://github.com/chump29/birthdaybot/workflows/CodeQL/badge.svg "CodeQL") &nbsp;
-![Coverage](https://img.shields.io/badge/Coverage-85.9%25-success?style=plastic&logo=jest "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-85.59%25-success?style=plastic&logo=jest "Coverage")
 
 ![NO AI](https://img.shields.io/badge/NO-AI-orange?style=plastic "NO AI") &nbsp;
 ![License](https://img.shields.io/github/license/chump29/birthdaybot?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3")
@@ -75,12 +75,13 @@
 
 |  📝 Description   | 📌 Variable |    {...} Value    |
 |:-----------------:|:-----------:|:-----------------:|
-|     Logo Name     |  LOGO_NAME  |   soberbot.webp   |
+|     Logo Name     |  LOGO_NAME  | birthdaybot.webp  |
 |    Local Path     |  LOGO_PATH  |  ./utils/images   |
 |       Port        |  LOGO_PORT  | **random**/[port] |
 |     Logo URL      |  LOGO_URL   |      \<url>       |
-|    Logo 2 Name    | LOGO2_NAME  |    \<filename>    |
-| Logo 2 Local Path | LOGO2_PATH  |      \<path>      |
+|    Logo 2 Name    | LOGO2_NAME  |   birthday.webp   |
+| Logo 2 Local Path | LOGO2_PATH  |  ./utils/images   |
+|    Logo 2 URL     |  LOGO2_URL  |      \<url>       |
 
 ##### From `@postfmly/checkrate`:
 
