@@ -103,9 +103,14 @@ const env = cleanEnv(Bun.env, {
 })
 
 if (import.meta.main) {
-  const { styleText } = await import("node:util")
-  const REDACTED: string = styleText("red", "[REDACTED]")
-  console.table({ ...env, CHANNEL_ID: REDACTED, GUILD_ID: REDACTED, ROLE_ID: REDACTED, TOKEN: REDACTED })
+  type T = keyof typeof env
+
+  const REDACTED: T[] = ["CHANNEL_ID", "GUILD_ID", "ROLE_ID", "TOKEN"]
+
+  console.table({
+    ...env,
+    ...Object.fromEntries(REDACTED.map((k: T): [T, string] => [k, "\x1b[31m[REDACTED]\x1b[0m"]))
+  })
 }
 
 export { env }
