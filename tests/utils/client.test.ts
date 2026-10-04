@@ -5,8 +5,8 @@ import { beforeAll, describe, expect, jest, mock, spyOn, test } from "bun:test"
 import { simpleFaker as fake } from "@faker-js/faker"
 import { type Client, type ClientUser } from "discord.js"
 
-import { init, shutdown } from "../utils/client.ts"
-import { env } from "../utils/env.ts"
+import { init, shutdown } from "../../utils/client.ts"
+import { env } from "../../utils/env.ts"
 
 const infoSpy: jest.Mock = spyOn(console, "info")
 
@@ -18,7 +18,7 @@ describe("client", (): void => {
   test("shutdown", (): void => {
     mock.module("../utils/db.ts", (): unknown => ({
       DB: {
-        close: jest.fn()
+        close: jest.fn().mockReturnValue(undefined)
       }
     }))
 
@@ -28,7 +28,7 @@ describe("client", (): void => {
 
     expect(shutdown("TEST")).rejects.toThrowError("0")
 
-    const count: number = 4
+    const count: number = 8
 
     expect(infoSpy).toHaveBeenCalledTimes(count)
 
@@ -40,9 +40,9 @@ describe("client", (): void => {
 
     const tag: string = `${env.NAME}#${fake.string.numeric({ allowLeadingZeros: false, length: 4 })}`
 
-    mock.module("../utils/client.ts", (): unknown => ({
+    mock.module("../../utils/client.ts", (): unknown => ({
       TEST_CLIENT: {
-        login: jest.fn(),
+        login: jest.fn().mockResolvedValue(undefined),
         user: {
           displayName: env.NAME,
           tag

@@ -15,9 +15,9 @@ import {
   MIN_DAYS,
   MIN_MONTHS,
   MIN_USER_ID_LEN
-} from "../db/schema.ts"
-import { DB } from "../utils/db.ts"
-import { env } from "../utils/env.ts"
+} from "../../db/schema.ts"
+import { DB } from "../../utils/db.ts"
+import { env } from "../../utils/env.ts"
 
 const infoSpy: jest.Mock = spyOn(console, "info")
 
