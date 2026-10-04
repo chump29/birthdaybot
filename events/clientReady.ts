@@ -1,5 +1,5 @@
 import { readdir } from "node:fs/promises"
-import { parse } from "node:path"
+import { join, parse } from "node:path"
 
 import { info } from "@postfmly/logger"
 
@@ -16,14 +16,14 @@ const invoke = async (client: Client): Promise<void> => {
     throw new Error("Invalid client")
   }
 
-  const commands: string[] = (await readdir(`${import.meta.dirname}/commands`)).filter((file: string): boolean =>
+  const commands: string[] = (await readdir(join(import.meta.dir, "commands"))).filter((file: string): boolean =>
     file.endsWith(".ts")
   )
 
   const commandsArray: RESTPostAPIChatInputApplicationCommandsJSONBody[] = []
   await Promise.allSettled(
     commands.map(async (command: string): Promise<void> => {
-      const commandFile: ICommandFile = await import(`${import.meta.dirname}/commands/${command}`)
+      const commandFile: ICommandFile = await import(join(import.meta.dir, "commands", command))
       commandsArray.push(await commandFile.create())
 
       if (env.DEBUG) {
