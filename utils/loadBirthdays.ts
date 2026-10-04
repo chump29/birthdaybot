@@ -99,7 +99,7 @@ const initBirthdays = async (client: Client): Promise<void> => {
 const handleErrors = (results: PromiseSettledResult<unknown>[]): void => {
   for (const result of results) {
     if (result.status === "rejected") {
-      error(`Error: ${result.reason}`)
+      error(`❌ Error: ${result.reason}`)
     }
   }
 }

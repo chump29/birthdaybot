@@ -41,7 +41,7 @@ const shutdown = async (event: string = "ERROR"): Promise<void> => {
 
 const login = async (): Promise<void> => {
   if (!CLIENT) {
-    throw new Error("❌ Invalid CLIENT")
+    throw new Error("Invalid CLIENT")
   }
 
   CLIENT = TEST_CLIENT ?? CLIENT
