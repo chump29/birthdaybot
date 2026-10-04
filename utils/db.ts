@@ -31,12 +31,8 @@ class BirthdayBotDatabase implements IBirthdayBotDatabase {
   _db: Nullable<DBType> = null
 
   open(): void {
-    if (this.client) {
-      if (env.DEBUG) {
-        info("⚠️  Database already open")
-      }
-
-      return
+    if (this._db && env.DEBUG) {
+      info("⚠️  Database already open")
     }
 
     const dbPathName: string = join(env.DB_PATH, env.DB_NAME)
@@ -69,12 +65,8 @@ class BirthdayBotDatabase implements IBirthdayBotDatabase {
   }
 
   close(): void {
-    if (!this.client) {
-      if (env.DEBUG) {
-        info("⚠️  Database already closed")
-      }
-
-      return
+    if (!this._db && env.DEBUG) {
+      info("⚠️  Database already closed")
     }
 
     this.client?.close()
