@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { type Optional } from "@postfmly/types"
 
 import { bool, cleanEnv, type ExactValidator, makeExactValidator, str, url } from "envalid"

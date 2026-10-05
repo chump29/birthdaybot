@@ -22,6 +22,7 @@
   "scripts": {
     "check": "bunx --bun depcheck --ignores=\"@postfmly/config,@types/*,bun:*,lcov-total\"",
     "dev": "bun run --bun --watch index.ts",
+    "env": "bun run --bun utils/env.ts",
     "preinstall": "bunx --bun only-allow bun",
     "lint": "bun run scan && bun run lint:spell && bun run lint:biome && bun run lint:env && bun run lint:ts",
     "lint:biome": "bun run --bun biome check --write --verbose --reporter=default --reporter=github --error-on-warnings",
