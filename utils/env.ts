@@ -1,3 +1,4 @@
+import { printVars } from "@postfmly/logger"
 import { type Optional } from "@postfmly/types"
 
 import { bool, cleanEnv, type ExactValidator, makeExactValidator, str, url } from "envalid"
@@ -73,7 +74,7 @@ if (Bun.env.NODE_ENV === "test") {
   let chars: string = "[0-9]"
   getFakeId = (): string => fake.helpers.fromRegExp(`${chars}{${MIN_ID_LEN},${MAX_ID_LEN}}`)
 
-  getFakeURL = (): string => fake.internet.url()
+  getFakeURL = (): string => fake.image.url({ height: 64, width: 64 })
 
   chars = "[a-zA-Z0-9]"
   fakeToken = fake.helpers.fromRegExp(
@@ -102,14 +103,7 @@ const env = cleanEnv(Bun.env, {
 })
 
 if (import.meta.main) {
-  type T = keyof typeof env
-
-  const REDACTED: T[] = ["CHANNEL_ID", "GUILD_ID", "ROLE_ID", "TOKEN"]
-
-  console.table({
-    ...env,
-    ...Object.fromEntries(REDACTED.map((k: T): [T, string] => [k, "\x1b[31m[REDACTED]\x1b[0m"]))
-  })
+  printVars(env, ["CHANNEL_ID", "GUILD_ID", "ROLE_ID", "TOKEN"])
 }
 
 export { env }
