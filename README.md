@@ -10,7 +10,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-3.49.2-informational?style=plastic&logo=sqlite "SQLite")
 
 ![CodeQL](https://github.com/chump29/birthdaybot/workflows/CodeQL/badge.svg "CodeQL") &nbsp;
-![Coverage](https://img.shields.io/badge/Coverage-85.35%25-success?style=plastic&logo=jest "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-86.2%25-success?style=plastic&logo=jest "Coverage")
 
 ![NO AI](https://img.shields.io/badge/NO-AI-orange?style=plastic "NO AI") &nbsp;
 ![License](https://img.shields.io/github/license/chump29/birthdaybot?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3") &nbsp; <!-- markdownlint-disable MD013 -->
@@ -60,18 +60,20 @@
 
 #### Environment Variables:
 
-| 📝 Description | 📌 Variable |  {...} Value   |
-|:--------------:|:-----------:|:--------------:|
-|    Activity    |  ACTIVITY   |    Partying    |
-|   Channel ID   | CHANNEL_ID  |     \<id>      |
-|  Embed Color   |    COLOR    |    #78866b     |
-|    DB Name     |   DB_NAME   | birthdaybot.db |
-|    DB Path     |   DB_PATH   |     ./db/      |
-|     Debug      |    DEBUG    | true/**false** |
-|   Server ID    |  GUILD_ID   |     \<id>      |
-|    Bot Name    |    NAME     |  BirthdayBot   |
-|    Role ID     |   ROLE_ID   |     \<id>      |
-|   Bot Token    |    TOKEN    |    \<token>    |
+|     📝 Description      | 📌 Variable |  {...} Value   |
+|:-----------------------:|:-----------:|:--------------:|
+|        Activity         |  ACTIVITY   |    Partying    |
+|       Channel ID        | CHANNEL_ID  |     \<id>      |
+| Embed Color<sup>1</sup> |    COLOR    |    #78866b     |
+|         DB Name         |   DB_NAME   | birthdaybot.db |
+|         DB Path         |   DB_PATH   |     ./db/      |
+|          Debug          |    DEBUG    | true/**false** |
+|        Server ID        |  GUILD_ID   |     \<id>      |
+|        Bot Name         |    NAME     |  BirthdayBot   |
+|         Role ID         |   ROLE_ID   |     \<id>      |
+|        Bot Token        |    TOKEN    |    \<token>    |
+
+###### <sup>1</sup> #RRGGBB format <!-- markdownlint-disable-line MD001 -->
 
 ##### From `@postfmly/logoserver`:
 

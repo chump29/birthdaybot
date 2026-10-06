@@ -60,18 +60,20 @@
 
 #### Environment Variables:
 
-| 📝 Description | 📌 Variable |  {...} Value   |
-|:--------------:|:-----------:|:--------------:|
-|    Activity    |  ACTIVITY   |    Partying    |
-|   Channel ID   | CHANNEL_ID  |     \<id>      |
-|  Embed Color   |    COLOR    |    #78866b     |
-|    DB Name     |   DB_NAME   | birthdaybot.db |
-|    DB Path     |   DB_PATH   |     ./db/      |
-|     Debug      |    DEBUG    | true/**false** |
-|   Server ID    |  GUILD_ID   |     \<id>      |
-|    Bot Name    |    NAME     |  BirthdayBot   |
-|    Role ID     |   ROLE_ID   |     \<id>      |
-|   Bot Token    |    TOKEN    |    \<token>    |
+|     📝 Description      | 📌 Variable |  {...} Value   |
+|:-----------------------:|:-----------:|:--------------:|
+|        Activity         |  ACTIVITY   |    Partying    |
+|       Channel ID        | CHANNEL_ID  |     \<id>      |
+| Embed Color<sup>1</sup> |    COLOR    |    #78866b     |
+|         DB Name         |   DB_NAME   | birthdaybot.db |
+|         DB Path         |   DB_PATH   |     ./db/      |
+|          Debug          |    DEBUG    | true/**false** |
+|        Server ID        |  GUILD_ID   |     \<id>      |
+|        Bot Name         |    NAME     |  BirthdayBot   |
+|         Role ID         |   ROLE_ID   |     \<id>      |
+|        Bot Token        |    TOKEN    |    \<token>    |
+
+###### <sup>1</sup> #RRGGBB format <!-- markdownlint-disable-line MD001 -->
 
 ##### From `@postfmly/logoserver`:
 

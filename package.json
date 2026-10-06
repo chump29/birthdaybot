@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@postfmly/checkrate": "^2.0.2",
-    "@postfmly/logger": "^1.1.3",
+    "@postfmly/logger": "^1.1.6",
     "@postfmly/logoserver": "^1.3.11",
     "@postfmly/types": "^1.0.4",
     "dayjs": "^1.11.23",
