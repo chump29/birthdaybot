@@ -2,7 +2,7 @@ import { printVars } from "@postfmly/logger"
 import { type Optional } from "@postfmly/types"
 
 import { bool, cleanEnv, type ExactValidator, makeExactValidator, str, url } from "envalid"
-import { anyOf, caseInsensitive, createRegExp, wordChar } from "magic-regexp"
+import { anyOf, caseInsensitive, createRegExp, exactly, wordChar } from "magic-regexp"
 import {
   digits,
   hexColor,
@@ -47,9 +47,9 @@ const TokenSchema = pipe(
   regex(
     createRegExp(
       anyOf(wordChar, "-").times.between(UID_MIN_LEN, UID_MAX_LEN).at.lineStart(),
-      ".",
+      exactly("."),
       anyOf(wordChar, "-").times.between(TS_MIN_LEN, TS_MAX_LEN),
-      ".",
+      exactly("."),
       anyOf(wordChar, "-").times.between(HMAC_MIN_LEN, HMAC_MAX_LEN).at.lineEnd(),
       [caseInsensitive]
     )
