@@ -6,7 +6,7 @@
       "name": "birthdaybot",
       "dependencies": {
         "@postfmly/checkrate": "^2.0.2",
-        "@postfmly/logger": "^1.1.2",
+        "@postfmly/logger": "^1.1.3",
         "@postfmly/logoserver": "^1.3.11",
         "@postfmly/types": "^1.0.4",
         "dayjs": "^1.11.23",
@@ -292,7 +292,7 @@
 
     "@postfmly/config": ["@postfmly/config@1.6.1", "https://npm.postfmly.com/@postfmly/config/-/config-1.6.1.tgz", { "dependencies": { "@biomejs/biome": "^2.5.15", "@types/bun": "^1.4.2", "@types/node": "^26.6.4", "cspell": "^10.3.6", "globals": "^17.13.0", "typescript": "^7.0.2" }, "bin": { "link-configs": "bin/link-configs" } }, "sha512-vFx+QV+454gS4o9z6I973Kxq2b2KIKMHeN6sI5RfNy6SFF89pryNXomVY96CD5OKtSTke2Bgx7tCVFOnYM8g5A=="],
 
-    "@postfmly/logger": ["@postfmly/logger@1.1.2", "https://npm.postfmly.com/@postfmly/logger/-/logger-1.1.2.tgz", { "dependencies": { "browser-or-node": "^3.0.0", "dayjs": "^1.11.23", "magic-regexp": "^0.11.2", "picocolors": "^1.1.1" } }, "sha512-DlHyJH9fV6iuu4iOARV2PljSnhcHo3qjK6C1GW7gLJ2KyCjt70ENvW1vClrPGfdCh6Mh9whZ6Yne3ssuTrlABg=="],
+    "@postfmly/logger": ["@postfmly/logger@1.1.3", "https://npm.postfmly.com/@postfmly/logger/-/logger-1.1.3.tgz", { "dependencies": { "browser-or-node": "^3.0.0", "dayjs": "^1.11.23", "magic-regexp": "^0.11.2", "picocolors": "^1.1.1" } }, "sha512-o8Nrpu4z5P4BxK4r3s8k/BV00tQpMe6Fj5pgQvrcyVRlj7DsLvK68V11yn5cIbGNOVIyMVFdZWPNLe8ILiBEeQ=="],
 
     "@postfmly/logoserver": ["@postfmly/logoserver@1.3.11", "https://npm.postfmly.com/@postfmly/logoserver/-/logoserver-1.3.11.tgz", { "dependencies": { "@hono/bun": "^1.0.0", "@postfmly/logger": "^1.1.2", "@postfmly/types": "^1.0.3", "get-port": "^7.2.0", "hono": "^4.13.13", "valibot": "^1.5.0" } }, "sha512-H8mmcgL7vPr1OnsANqSrHNgp3sArkEbsZQ4GYhkH17dg0enwG1QaWytU464aFYECbzNqBcBe1Jxe9+pmV2w9fg=="],
 
