@@ -20,7 +20,7 @@
   },
   "type": "module",
   "scripts": {
-    "check": "bunx --bun depcheck --ignores=\"@postfmly/config,@types/*,bun:*,lcov-total\"",
+    "deps": "bunx --bun depcheck --ignores=\"@postfmly/config,@types/*,bun:*,lcov-total\"",
     "dev": "bun run --bun --watch index.ts",
     "env": "bun run --bun utils/env.ts",
     "env:test": "NODE_ENV=test bun run env",
@@ -30,7 +30,7 @@
     "lint:biome:ci": "bun run --bun biome ci --verbose --reporter=default --reporter=github --error-on-warnings",
     "lint:env": "bun run --bun dotenv-linter check .",
     "lint:spell": "bun run --bun cspell --dot --verbose .",
-    "lint:ts": "bun run --bun tsc",
+    "lint:ts": "bun check",
     "prepare": "bun run --bun .husky/prepare.min.mjs",
     "prod": "bun run --bun index.ts",
     "scan": "bun run scan:audit && bun run scan:cve && bun run scan:e18e",
@@ -56,8 +56,7 @@
     "chalk": "6.0.1",
     "cspell": "10.3.6",
     "globals": "17.13.0",
-    "ini": "7.0.0",
-    "typescript": "7.0.2"
+    "ini": "7.0.0"
   },
   "dependencies": {
     "@postfmly/checkrate": "^2.0.3",
@@ -73,7 +72,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
-    "@postfmly/config": "^1.6.2",
+    "@postfmly/config": "^1.6.3",
     "drizzle-kit": "1.0.0-rc.4",
     "expect-type": "^1.4.0",
     "husky": "^9.1.7",
@@ -81,9 +80,9 @@
     "lint-staged": "^17.6.0",
     "ts-pattern": "^5.9.0"
   },
-  "packageManager": "bun@1.4.2",
+  "packageManager": "bun@1.4.3",
   "engines": {
-    "bun": "^1.4.2"
+    "bun": "^1.4.3"
   },
   "engineStrict": true
 }
