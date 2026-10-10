@@ -1,7 +1,5 @@
 import { parse } from "node:path"
 
-import { error } from "@postfmly/logger"
-
 import {
   type ChatInputCommandInteraction,
   EmbedBuilder,
@@ -32,24 +30,16 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
     return
   }
 
-  try {
-    await interaction.editReply({
-      embeds: [
-        new EmbedBuilder()
-          .setColor(env.COLOR as HexColorString)
-          .setAuthor({ iconURL: env.LOGO_URL, name: `${env.NAME} v${version}` })
-          .setThumbnail(env.LOGO_URL)
-          .setDescription("- Add birthday role")
-          .setFooter({ text: `By ${author.name}` })
-      ]
-    })
-  } catch (e: unknown) {
-    const msg: string = `❌ Could not get info for ${env.NAME}`
-
-    error(msg, e)
-
-    await interaction.editReply({ content: `-# > ${msg}` })
-  }
+  await interaction.editReply({
+    embeds: [
+      new EmbedBuilder()
+        .setColor(env.COLOR as HexColorString)
+        .setAuthor({ iconURL: env.LOGO_URL, name: `${env.NAME} v${version}` })
+        .setThumbnail(env.LOGO_URL)
+        .setDescription("- Add birthday role")
+        .setFooter({ text: `By ${author.name}` })
+    ]
+  })
 }
 
 export { create, invoke }

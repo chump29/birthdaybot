@@ -1,6 +1,5 @@
 import { parse } from "node:path"
 
-import { error } from "@postfmly/logger"
 import { type Optional } from "@postfmly/types"
 
 import { default as dayjs } from "dayjs"
@@ -62,25 +61,17 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
     return
   }
 
-  try {
-    const birthday: Optional<IBirthday> = await DB.getBirthday(interaction.user.id)
+  const birthday: Optional<IBirthday> = await DB.getBirthday(interaction.user.id)
 
-    await interaction.editReply({
-      embeds: [
-        new EmbedBuilder()
-          .setColor(env.COLOR as HexColorString)
-          .setTitle(`🎂  ${interaction.user.displayName}'s Birthday  🎉`)
-          .setFields(getFields(birthday))
-          .toJSON()
-      ]
-    })
-  } catch (e: unknown) {
-    const msg: string = "❌ Could not list birthdays"
-
-    error(msg, e)
-
-    await interaction.editReply({ content: `-# > ${msg}` })
-  }
+  await interaction.editReply({
+    embeds: [
+      new EmbedBuilder()
+        .setColor(env.COLOR as HexColorString)
+        .setTitle(`🎂  ${interaction.user.displayName}'s Birthday  🎉`)
+        .setFields(getFields(birthday))
+        .toJSON()
+    ]
+  })
 }
 
 export { create, invoke }

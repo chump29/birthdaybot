@@ -60,10 +60,10 @@
     "typescript": "7.0.2"
   },
   "dependencies": {
-    "@postfmly/checkrate": "^2.0.2",
-    "@postfmly/logger": "^1.1.6",
-    "@postfmly/logoserver": "^1.3.11",
-    "@postfmly/types": "^1.0.4",
+    "@postfmly/checkrate": "^2.0.3",
+    "@postfmly/logger": "^1.1.8",
+    "@postfmly/logoserver": "^1.3.13",
+    "@postfmly/types": "^1.0.6",
     "dayjs": "^1.11.23",
     "discord.js": "^14.27.0",
     "drizzle-orm": "1.0.0-rc.4",
@@ -73,7 +73,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
-    "@postfmly/config": "^1.6.1",
+    "@postfmly/config": "^1.6.2",
     "drizzle-kit": "1.0.0-rc.4",
     "expect-type": "^1.4.0",
     "husky": "^9.1.7",

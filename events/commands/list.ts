@@ -1,7 +1,5 @@
 import { parse } from "node:path"
 
-import { error } from "@postfmly/logger"
-
 import { default as dayjs } from "dayjs"
 import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
 import { default as customParseFormat } from "dayjs/plugin/customParseFormat"
@@ -60,25 +58,17 @@ const getFields = (birthdays: IBirthday[]): APIEmbedField[] => {
 const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> => {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
-  try {
-    const birthdays: IBirthday[] = await DB.getBirthdays()
+  const birthdays: IBirthday[] = await DB.getBirthdays()
 
-    await interaction.editReply({
-      embeds: [
-        new EmbedBuilder()
-          .setColor(env.COLOR as HexColorString)
-          .setTitle(`🎂  ${env.NAME} Birthdays  🎉`)
-          .setFields(getFields(birthdays))
-          .toJSON()
-      ]
-    })
-  } catch (e: unknown) {
-    const msg: string = "❌ Could not list birthdays"
-
-    error(msg, e)
-
-    await interaction.editReply({ content: `-# > ${msg}` })
-  }
+  await interaction.editReply({
+    embeds: [
+      new EmbedBuilder()
+        .setColor(env.COLOR as HexColorString)
+        .setTitle(`🎂  ${env.NAME} Birthdays  🎉`)
+        .setFields(getFields(birthdays))
+        .toJSON()
+    ]
+  })
 }
 
 export { create, invoke }

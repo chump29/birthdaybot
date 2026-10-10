@@ -144,7 +144,7 @@ await Promise.all(
             expect(data.fields).not.toBeEmpty()
           })
           .with("ping", (): void => expect(payload.content).toInclude("Pong"))
-          .otherwise((): void => {
+          .otherwise((): never => {
             throw new Error(`Payload tests not found for /${name}`)
           })
       })

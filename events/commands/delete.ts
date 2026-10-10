@@ -1,7 +1,5 @@
 import { parse } from "node:path"
 
-import { error } from "@postfmly/logger"
-
 import {
   type ChatInputCommandInteraction,
   InteractionContextType,
@@ -31,21 +29,15 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
 
   const userId: string = interaction.user.id
 
-  try {
-    if (!(await DB.isValidUser(userId))) {
-      await interaction.editReply({ content: "-# > ⚠️  Birthday not found" })
+  if (!(await DB.isValidUser(userId))) {
+    await interaction.editReply({ content: "-# > ⚠️  Birthday not found" })
 
-      return
-    }
-
-    await DB.deleteBirthday(userId)
-
-    await interaction.editReply({ content: "-# > ✅ Deleted birthday" })
-  } catch (e: unknown) {
-    error(`❌ Could not delete birthday for ${interaction.user.displayName} (${userId})`, e)
-
-    await interaction.editReply({ content: "-# > ❌ Could not delete birthday" })
+    return
   }
+
+  await DB.deleteBirthday(userId)
+
+  await interaction.editReply({ content: "-# > ✅ Deleted birthday" })
 }
 
 export { create, invoke }

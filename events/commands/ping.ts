@@ -1,7 +1,5 @@
 import { parse } from "node:path"
 
-import { error } from "@postfmly/logger"
-
 import {
   type ChatInputCommandInteraction,
   InteractionContextType,
@@ -29,17 +27,9 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
     return
   }
 
-  try {
-    await interaction.editReply({
-      content: `-# > **Pong!** ⚡ Your latency is: \`${Date.now() - interaction.createdTimestamp}ms\``
-    })
-  } catch (e: unknown) {
-    const msg: string = `❌ Could not ping ${env.NAME}`
-
-    error(msg, e)
-
-    await interaction.editReply({ content: `-# > ${msg}` })
-  }
+  await interaction.editReply({
+    content: `-# > **Pong!** ⚡ Your latency is: \`${Date.now() - interaction.createdTimestamp}ms\``
+  })
 }
 
 export { create, invoke }

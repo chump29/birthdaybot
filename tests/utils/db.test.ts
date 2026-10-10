@@ -21,23 +21,19 @@ import { env } from "../../utils/env.ts"
 
 const infoSpy: jest.Mock = spyOn(console, "info")
 
-const deleteFiles = async (): Promise<void> => {
-  for await (const file of glob(join(env.DB_PATH, `${env.DB_NAME}*`))) {
-    await unlink(file)
-  }
-}
+const path: string = join(env.DB_PATH, env.DB_NAME)
 
 beforeAll(async (): Promise<void> => {
   infoSpy.mockReset()
 
-  await deleteFiles()
+  for await (const file of glob(`${path}*`)) {
+    await unlink(file)
+  }
 
   DB.open()
 })
 
-afterAll(async (): Promise<void> => {
-  await deleteFiles()
-
+afterAll((): void => {
   DB.close()
 })
 
