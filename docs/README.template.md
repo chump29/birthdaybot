@@ -62,7 +62,7 @@
 
 |     📝 Description      | 📌 Variable |  {...} Value   |
 |:-----------------------:|:-----------:|:--------------:|
-|        Activity         |  ACTIVITY   |    Partying    |
+|        Activity         |  ACTIVITY   |  Celebrating   |
 |       Channel ID        | CHANNEL_ID  |     \<id>      |
 | Embed Color<sup>1</sup> |    COLOR    |    #78866b     |
 |         DB Name         |   DB_NAME   | birthdaybot.db |

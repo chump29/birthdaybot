@@ -7,7 +7,7 @@
 ![Bun](https://img.shields.io/badge/Bun-1.4.2-informational?style=plastic&logo=bun "Bun") &nbsp;
 ![discord.js](https://img.shields.io/badge/discord.js-^14.27.0-informational?style=plastic&logo=discord.js "discord.js") &nbsp; <!-- markdownlint-disable-line MD013 -->
 ![Drizzle](https://img.shields.io/badge/Drizzle-1.0.0--rc.4-informational?style=plastic&logo=drizzle "Drizzle") &nbsp;
-![SQLite](https://img.shields.io/badge/SQLite-3.49.2-informational?style=plastic&logo=sqlite "SQLite")
+![SQLite](https://img.shields.io/badge/SQLite-3.53.4-informational?style=plastic&logo=sqlite "SQLite")
 
 ![CodeQL](https://github.com/chump29/birthdaybot/workflows/CodeQL/badge.svg "CodeQL") &nbsp;
 ![Coverage](https://img.shields.io/badge/Coverage-86.2%25-success?style=plastic&logo=jest "Coverage")
@@ -62,7 +62,7 @@
 
 |     📝 Description      | 📌 Variable |  {...} Value   |
 |:-----------------------:|:-----------:|:--------------:|
-|        Activity         |  ACTIVITY   |    Partying    |
+|        Activity         |  ACTIVITY   |  Celebrating   |
 |       Channel ID        | CHANNEL_ID  |     \<id>      |
 | Embed Color<sup>1</sup> |    COLOR    |    #78866b     |
 |         DB Name         |   DB_NAME   | birthdaybot.db |
