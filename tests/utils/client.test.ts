@@ -1,6 +1,6 @@
 import { default as process } from "node:process"
 
-import { afterEach, beforeAll, beforeEach, describe, expect, jest, spyOn, test } from "bun:test"
+import { beforeAll, describe, expect, jest, spyOn, test } from "bun:test"
 
 import { simpleFaker as fake } from "@faker-js/faker"
 import { type ClientUser, type Client as DiscordClient } from "discord.js"
@@ -8,17 +8,15 @@ import { type ClientUser, type Client as DiscordClient } from "discord.js"
 import { Client } from "../../utils/client.ts"
 import { env } from "../../utils/env.ts"
 
-const infoSpy: jest.Mock = spyOn(console, "info")
-
-const onSpy: jest.Mock = spyOn(process, "on")
+let infoSpy: jest.Mock
+let exitSpy: jest.Mock
 
 const tag: string = `${env.NAME}#${fake.string.numeric({ allowLeadingZeros: false, length: 4 })}`
 
-beforeAll((): void => {
-  infoSpy.mockReset()
-})
+beforeAll(async (): Promise<void> => {
+  infoSpy = spyOn(console, "info").mockImplementation((): void => undefined) // suppress
+  exitSpy = spyOn(process, "exit").mockImplementation((): never => undefined as never)
 
-beforeEach(async (): Promise<void> => {
   await Client.init({
     destroy: jest.fn().mockResolvedValue(undefined),
     login: jest.fn().mockResolvedValue(undefined),
@@ -31,23 +29,18 @@ beforeEach(async (): Promise<void> => {
   } as unknown as DiscordClient)
 })
 
-afterEach(async (): Promise<void> => {
-  await Client.shutdown()
-})
-
 describe("client", (): void => {
-  test("init", (): void => {
-    const count: number = 5
+  test("init", async (): Promise<void> => {
+    await Client.shutdown()
 
-    expect(infoSpy).toHaveBeenCalledTimes(count)
+    const TIMES: number = 11
+    expect(infoSpy).toHaveBeenCalledTimes(TIMES)
 
-    expect(infoSpy).toHaveBeenNthCalledWith(count, expect.any(String), expect.stringContaining(env.NAME))
-    expect(infoSpy).toHaveBeenNthCalledWith(count, expect.any(String), expect.stringContaining(tag))
+    const LINE_NUM: number = 5
+    expect(infoSpy).toHaveBeenNthCalledWith(LINE_NUM, expect.any(String), expect.stringContaining(env.NAME))
+    expect(infoSpy).toHaveBeenNthCalledWith(LINE_NUM, expect.any(String), expect.stringContaining(tag))
 
-    process.emit("SIGINT")
-    expect(onSpy).toHaveBeenNthCalledWith(1, "SIGINT", expect.any(Function))
-
-    process.emit("SIGTERM")
-    expect(onSpy).toHaveBeenNthCalledWith(2, "SIGTERM", expect.any(Function))
+    expect(exitSpy).toHaveBeenCalledTimes(1)
+    expect(exitSpy).toHaveBeenCalledWith(0)
   })
 })

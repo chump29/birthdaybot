@@ -5,6 +5,7 @@ import { Database } from "bun:sqlite"
 import { info } from "@postfmly/logger"
 import { type Nullable, type Optional } from "@postfmly/types"
 
+import { default as dayjs } from "dayjs"
 import { and, eq } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/bun-sqlite"
 import { migrate } from "drizzle-orm/bun-sqlite/migrator"
@@ -131,9 +132,9 @@ class BirthdayBotDatabase implements IBirthdayBotDatabase {
   }
 
   async getBirthdaysToday(): Promise<IBirthday[]> {
-    const date: Date = new Date()
-    const month: number = date.getMonth() + 1
-    const day: number = date.getDate()
+    const date: dayjs.Dayjs = dayjs()
+    const month: number = date.month() + 1
+    const day: number = date.date()
 
     return await this.dbCheck()
       .select()

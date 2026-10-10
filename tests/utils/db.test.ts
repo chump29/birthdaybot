@@ -1,11 +1,12 @@
 import { glob, unlink } from "node:fs/promises"
 import { join } from "node:path"
 
-import { afterAll, beforeAll, describe, expect, type jest, spyOn, test } from "bun:test"
+import { afterAll, beforeAll, describe, expect, spyOn, test } from "bun:test"
 
 import { type Optional } from "@postfmly/types"
 
 import { fakerEN_US as fake } from "@faker-js/faker"
+import { default as dayjs } from "dayjs"
 
 import {
   type IBirthday,
@@ -19,12 +20,10 @@ import {
 import { DB } from "../../utils/db.ts"
 import { env } from "../../utils/env.ts"
 
-const infoSpy: jest.Mock = spyOn(console, "info")
-
 const path: string = join(env.DB_PATH, env.DB_NAME)
 
 beforeAll(async (): Promise<void> => {
-  infoSpy.mockReset()
+  spyOn(console, "info").mockImplementation((): void => undefined) // suppress
 
   for await (const file of glob(`${path}*`)) {
     await unlink(file)
@@ -50,9 +49,9 @@ describe("db", (): void => {
 
   const userId: string = getUserId()
 
-  const date: Date = new Date()
-  const month: number = date.getMonth() + 1
-  const day: number = date.getDate()
+  const date: dayjs.Dayjs = dayjs()
+  const month: number = date.month() + 1
+  const day: number = date.date()
 
   test("getBirthday", async (): Promise<void> => {
     const userName: string = getUserName()
