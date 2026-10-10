@@ -35,8 +35,6 @@ const commands: string[] = (await readdir(dir)).filter(
   (file: string): boolean => file.endsWith(".ts") && !file.startsWith("wish")
 )
 
-const infoSpy: jest.Mock = spyOn(console, "info")
-
 const getUserId = (): string => fake.helpers.fromRegExp(`[0-9]{${MIN_USER_ID_LEN},${MAX_USER_ID_LEN}}`)
 
 const getUserName = (): string => fake.internet.username()
@@ -44,7 +42,7 @@ const getUserName = (): string => fake.internet.username()
 const getDate = (): dayjs.Dayjs => dayjs(fake.date.past())
 
 beforeAll(async (): Promise<void> => {
-  infoSpy.mockReset()
+  spyOn(console, "info").mockImplementation((): void => undefined) // suppress
 
   DB.open()
 

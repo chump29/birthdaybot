@@ -59,10 +59,10 @@
     "ini": "7.0.0"
   },
   "dependencies": {
-    "@postfmly/checkrate": "^2.0.3",
-    "@postfmly/logger": "^1.1.8",
-    "@postfmly/logoserver": "^1.3.13",
-    "@postfmly/types": "^1.0.6",
+    "@postfmly/checkrate": "^2.0.4",
+    "@postfmly/logger": "^1.1.9",
+    "@postfmly/logoserver": "^1.3.14",
+    "@postfmly/types": "^1.0.7",
     "dayjs": "^1.11.23",
     "discord.js": "^14.27.0",
     "drizzle-orm": "1.0.0-rc.4",

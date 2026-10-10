@@ -5,10 +5,10 @@
     "": {
       "name": "birthdaybot",
       "dependencies": {
-        "@postfmly/checkrate": "^2.0.3",
-        "@postfmly/logger": "^1.1.8",
-        "@postfmly/logoserver": "^1.3.13",
-        "@postfmly/types": "^1.0.6",
+        "@postfmly/checkrate": "^2.0.4",
+        "@postfmly/logger": "^1.1.9",
+        "@postfmly/logoserver": "^1.3.14",
+        "@postfmly/types": "^1.0.7",
         "dayjs": "^1.11.23",
         "discord.js": "^14.27.0",
         "drizzle-orm": "1.0.0-rc.4",
@@ -287,15 +287,15 @@
 
     "@lukeed/ms": ["@lukeed/ms@2.0.2", "https://npm.postfmly.com/@lukeed/ms/-/ms-2.0.2.tgz", {}, "sha512-9I2Zn6+NJLfaGoz9jN3lpwDgAYvfGeNYdbAIjJOqzs4Tpc+VU3Jqq4IofSUBKajiDS8k9fZIg18/z13mpk1bsA=="],
 
-    "@postfmly/checkrate": ["@postfmly/checkrate@2.0.3", "https://npm.postfmly.com/@postfmly/checkrate/-/checkrate-2.0.3.tgz", { "dependencies": { "@jarrodek/pluralize": "^1.0.2", "@lukeed/ms": "^2.0.2", "@postfmly/logger": "^1.1.8", "@postfmly/types": "^1.0.6", "dayjs": "^1.11.23", "valibot": "^1.5.0" } }, "sha512-5PIGIKLDG9JPdi7CFlL1M3whWJGQ3dyxl7HjZCjL9kdpSVSR6pSf0FY9E+fRP264ZQgcyiXLulq4GzRZ+kUQIw=="],
+    "@postfmly/checkrate": ["@postfmly/checkrate@2.0.4", "https://npm.postfmly.com/@postfmly/checkrate/-/checkrate-2.0.4.tgz", { "dependencies": { "@jarrodek/pluralize": "^1.0.2", "@lukeed/ms": "^2.0.2", "@postfmly/logger": "^1.1.9", "@postfmly/types": "^1.0.7", "dayjs": "^1.11.23", "valibot": "^1.5.0" } }, "sha512-hznewsArXvxnGpO8pc1uXhdhpgwOxGvM7sh/UwTjUh7lpd2TcFTo/R35Dm0JSQWjdEtCB0OZ4nj6RlHWFGPGLA=="],
 
     "@postfmly/config": ["@postfmly/config@1.6.3", "https://npm.postfmly.com/@postfmly/config/-/config-1.6.3.tgz", { "dependencies": { "@biomejs/biome": "^2.5.15", "@types/bun": "^1.4.2", "@types/node": "^26.6.5", "cspell": "^10.3.6", "globals": "^17.13.0" }, "bin": { "link-configs": "bin/link-configs" } }, "sha512-PZ5uBxc5p+xlmi8chaS+pSX8EmSlX6HO/gKDcl8HXhO8oR9PqHcDt92zpjqN624ARaSCY7iqJ3J0iU7V8XMqbA=="],
 
-    "@postfmly/logger": ["@postfmly/logger@1.1.8", "https://npm.postfmly.com/@postfmly/logger/-/logger-1.1.8.tgz", { "dependencies": { "ansis": "^4.4.0", "browser-or-node": "^3.0.0", "dayjs": "^1.11.23", "hex-color-to-color-name": "^2.0.8", "ts-pattern": "^5.9.0" } }, "sha512-XeiUTB3uN315OYYZ9UliEDaGRxF89hsGo+5E+wY865ecIDJ0KPG/rAP4T356hTsVBFzMZO+uouqaHzvbiayF9w=="],
+    "@postfmly/logger": ["@postfmly/logger@1.1.9", "https://npm.postfmly.com/@postfmly/logger/-/logger-1.1.9.tgz", { "dependencies": { "ansis": "^4.4.0", "browser-or-node": "^3.0.0", "dayjs": "^1.11.23", "hex-color-to-color-name": "^2.0.8", "ts-pattern": "^5.9.0" } }, "sha512-YdJD7Nf2egW2y3g7GM3TjvHH4zbqiUyPleHxnNqbrV4Oh82hjO96/q/yLyP2sUkEgQEkNuVelUvzamvzGaGb0A=="],
 
-    "@postfmly/logoserver": ["@postfmly/logoserver@1.3.13", "https://npm.postfmly.com/@postfmly/logoserver/-/logoserver-1.3.13.tgz", { "dependencies": { "@hono/bun": "^1.0.1", "@postfmly/logger": "^1.1.8", "@postfmly/types": "^1.0.6", "get-port": "^7.2.0", "hono": "^4.13.13", "valibot": "^1.5.0" } }, "sha512-zM01raowPmn+DRPwLN2v4MJgmBb9Ui1MOYRlJxOPVfEtK15EqgrWqHFfXxKtFUugANx59FO7OBeMbnPfTWAcfg=="],
+    "@postfmly/logoserver": ["@postfmly/logoserver@1.3.14", "https://npm.postfmly.com/@postfmly/logoserver/-/logoserver-1.3.14.tgz", { "dependencies": { "@hono/bun": "^1.0.1", "@postfmly/logger": "^1.1.9", "@postfmly/types": "^1.0.7", "get-port": "^7.2.0", "hono": "^4.13.13", "valibot": "^1.5.0" } }, "sha512-Vx7/1PpSCb0FmRDrIiGrezs0FHZVve1ZKVhNfNWjRRvPEv3qXBN/82/mIz7hE+czG6lR7f6sjM2HEh73qdsFzw=="],
 
-    "@postfmly/types": ["@postfmly/types@1.0.6", "https://npm.postfmly.com/@postfmly/types/-/types-1.0.6.tgz", {}, "sha512-F+0yp8rvxizgLMJkgnriD9LCA3T+964j01h6lsuuKhiB6hQJ+UDZp9wycz4mDkZadnifYZG92SlTgw+es3BvLA=="],
+    "@postfmly/types": ["@postfmly/types@1.0.7", "https://npm.postfmly.com/@postfmly/types/-/types-1.0.7.tgz", {}, "sha512-kB063O1/Z2zodfpn46y4RcKPexx4KBAy0nDhEI2yrZWUuA59p5oOaMzj4n7K4tTtePMu4Xqo0EJxh7X5m91ubA=="],
 
     "@sapphire/async-queue": ["@sapphire/async-queue@1.5.5", "https://npm.postfmly.com/@sapphire/async-queue/-/async-queue-1.5.5.tgz", {}, "sha512-cvGzxbba6sav2zZkH8GPf2oGk9yYoD5qrNWdu9fRehifgnFZJMV+nuy2nON2roRO4yQQ+v7MK/Pktl/HgfsUXg=="],
 
