@@ -42,6 +42,8 @@
 |  ManageRoles  |
 | SendMessages  |
 
+###### *NOTE: Requires `Server Members Intent`* <!-- markdownlint-disable-line MD001 -->
+
 #### Commands:
 
 |       📋 Task       |        🔧 Command         | ⚙️ Member Permission |
