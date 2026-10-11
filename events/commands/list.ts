@@ -58,14 +58,12 @@ const getFields = (birthdays: IBirthday[]): APIEmbedField[] => {
 const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> => {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
-  const birthdays: IBirthday[] = await DB.getBirthdays()
-
   await interaction.editReply({
     embeds: [
       new EmbedBuilder()
         .setColor(env.COLOR as HexColorString)
         .setTitle(`🎂  ${env.NAME} Birthdays  🎉`)
-        .setFields(getFields(birthdays))
+        .setFields(getFields(await DB.getBirthdays()))
         .toJSON()
     ]
   })

@@ -66,10 +66,8 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
 
   await DB.addBirthday(userId, userName, month, day)
 
-  const date: string = `${month}/${day}`
-
   await interaction.editReply({
-    content: `-# > 🎂  Birthday set to ${dayjs(date, "M/D").format("MMMM Do")}  🎉`
+    content: `-# > 🎂  Birthday set to ${dayjs(`${month}/${day}`, "M/D").format("MMMM Do")}  🎉`
   })
 }
 

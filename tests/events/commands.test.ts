@@ -9,7 +9,9 @@ import { type Optional } from "@postfmly/types"
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as dayjs } from "dayjs"
 import {
+  type APIEmbed,
   type ChatInputCommandInteraction,
+  EmbedBuilder,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
   type User
 } from "discord.js"
@@ -125,17 +127,17 @@ await Promise.all(
           .with("birthday", (): void => expect(payload.content).toInclude("🎂"))
           .with("delete", (): void => expect(payload.content).toInclude("⚠️"))
           .with("info", (): void => {
-            const data = payload.embeds?.[0].data
+            const { data }: { data: APIEmbed } = EmbedBuilder.from(payload.embeds?.[0])
 
             expect(decimalToHex(data.color)).toBe(env.COLOR)
-            expect(data.author.icon_url).toBe(env.LOGO_URL)
-            expect(data.author.name).toBe(`${env.NAME} v${version}`)
-            expect(data.thumbnail.url).toBe(env.LOGO_URL)
+            expect(data.author?.icon_url).toBe(env.LOGO_URL)
+            expect(data.author?.name).toBe(`${env.NAME} v${version}`)
+            expect(data.thumbnail?.url).toBe(env.LOGO_URL)
             expect(data.description).not.toBeEmpty()
-            expect(data.footer.text).toEndWith(author.name)
+            expect(data.footer?.text).toEndWith(author.name)
           })
           .with(P.union("list", "show"), (): void => {
-            const data = payload.embeds?.[0]
+            const { data }: { data: APIEmbed } = EmbedBuilder.from(payload.embeds?.[0])
 
             expect(decimalToHex(data.color)).toBe(env.COLOR)
             expect(data.title).toInclude("Birthday")

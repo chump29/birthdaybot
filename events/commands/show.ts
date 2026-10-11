@@ -61,14 +61,12 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
     return
   }
 
-  const birthday: Optional<IBirthday> = await DB.getBirthday(interaction.user.id)
-
   await interaction.editReply({
     embeds: [
       new EmbedBuilder()
         .setColor(env.COLOR as HexColorString)
         .setTitle(`🎂  ${interaction.user.displayName}'s Birthday  🎉`)
-        .setFields(getFields(birthday))
+        .setFields(getFields(await DB.getBirthday(interaction.user.id)))
         .toJSON()
     ]
   })
