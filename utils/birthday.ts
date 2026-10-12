@@ -1,5 +1,5 @@
 import { error, info } from "@postfmly/logger"
-import { type Nullable, type Optional } from "@postfmly/types"
+import { type Nullable } from "@postfmly/types"
 
 import { default as dayjs } from "dayjs"
 import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
@@ -26,12 +26,10 @@ import { env } from "./env.ts"
 
 dayjs.extend(advancedFormat)
 
-const WRONG: string = "-# > ❌ Something went wrong"
-
 interface ITaskData {
-  member?: GuildMember
-  success: boolean
-  userId?: string
+  readonly member?: GuildMember
+  readonly success: boolean
+  readonly userId?: string
 }
 
 interface IBirthdayBot {
@@ -40,22 +38,13 @@ interface IBirthdayBot {
 }
 
 class BirthdayBot implements IBirthdayBot {
-  private CHANNEL: Nullable<TextChannel> = null
-  private GUILD: Nullable<Guild> = null
-  private ROLE: Nullable<Role> = null
+  private CHANNEL!: TextChannel
+
+  private GUILD!: Guild
+  private ROLE!: Role
 
   // * /wish
   async handleBirthdays(interaction?: ChatInputCommandInteraction): Promise<void> {
-    if (!this.ROLE) {
-      throw new Error("Invalid ROLE")
-    }
-    const role: Role = this.ROLE // narrow
-
-    if (!this.GUILD) {
-      throw new Error("Invalid GUILD")
-    }
-    const guild: Guild = this.GUILD // narrow
-
     let birthdays: IBirthday[]
 
     const date: dayjs.Dayjs = dayjs()
@@ -63,31 +52,13 @@ class BirthdayBot implements IBirthdayBot {
     if (interaction) {
       await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
-      const u: Nullable<User> = interaction.options.getUser("user")
-      if (!u) {
-        interaction.editReply({ content: WRONG })
-
-        error("❌ User not found")
-
-        return
-      }
-
-      const m: Optional<GuildMember> = guild.members.cache.find(
-        (member: GuildMember): boolean => member.user.displayName.toLowerCase() === u.displayName.toLowerCase()
-      )
-      if (!m) {
-        await interaction.editReply({ content: WRONG })
-
-        error("❌ Member not found")
-
-        return
-      }
+      const user: User = interaction.options.getUser("user") as User
 
       birthdays = [
-        { day: date.date(), month: date.month() + 1, userId: m.id, userName: m.displayName } as IBirthday
+        { day: date.date(), month: date.month() + 1, userId: user.id, userName: user.displayName } as IBirthday
       ] as IBirthday[]
 
-      await interaction.editReply({ content: `-# > 🎉 Wished \`${interaction.user.username}\` a Happy Birthday` })
+      await interaction.editReply({ content: `-# > 🎉 Wished \`${user.displayName}\` a Happy Birthday` })
     } else {
       birthdays = await DB.getBirthdaysToday()
       if (birthdays.length === 0) {
@@ -107,11 +78,11 @@ class BirthdayBot implements IBirthdayBot {
     const memberTasks: Promise<ITaskData>[] = birthdays.map(async (birthday: IBirthday): Promise<ITaskData> => {
       const userId: string = birthday.userId
 
-      let member: Nullable<GuildMember> = guild.members.cache.get(userId) ?? null
+      let member: Nullable<GuildMember> = this.GUILD.members.cache.get(userId) ?? null
 
       if (!member) {
         try {
-          member = await guild.members.fetch(userId)
+          member = await this.GUILD.members.fetch(userId)
         } catch {
           return { userId, success: false } as ITaskData
         }
@@ -126,8 +97,8 @@ class BirthdayBot implements IBirthdayBot {
       if (data.success && data.member) {
         isBirthday.push(data.member)
 
-        if (!data.member.roles.cache.has(role.id)) {
-          if (data.member.user.id === guild.ownerId) {
+        if (!data.member.roles.cache.has(this.ROLE.id)) {
+          if (data.member.user.id === this.GUILD.ownerId) {
             info(`🛈  Not altering server owner roles for ${data.member.user.username}`)
           } else {
             toAddRole.push(data.member)
@@ -140,9 +111,9 @@ class BirthdayBot implements IBirthdayBot {
 
     const birthdayIds: Set<string> = new Set(isBirthday.map((member: GuildMember): string => member.id))
 
-    for (const member of role.members.values()) {
+    for (const member of this.ROLE.members.values()) {
       if (!birthdayIds.has(member.id)) {
-        if (member.user.id === guild.ownerId) {
+        if (member.user.id === this.GUILD.ownerId) {
           if (env.DEBUG) {
             info(`🛈  Not altering server owner roles for ${member.user.username}`)
           }
@@ -190,14 +161,14 @@ class BirthdayBot implements IBirthdayBot {
           info(`🛈  Added Birthday role to ${member.displayName}`)
         }
 
-        return member.roles.add(role)
+        return member.roles.add(this.ROLE)
       }),
       ...toRemoveRole.map((member: GuildMember): Promise<GuildMember> => {
         if (env.DEBUG) {
           info(`🛈  Removed Birthday role from ${member.displayName}`)
         }
 
-        return member.roles.remove(role)
+        return member.roles.remove(this.ROLE)
       }),
       ...toDelete.map((userId: string): Promise<void> => {
         if (env.DEBUG) {

@@ -2,7 +2,6 @@ import { default as process } from "node:process"
 
 import { error, info } from "@postfmly/logger"
 import { type ILogoServerConfig, LogoServer } from "@postfmly/logoserver"
-import { type Nullable } from "@postfmly/types"
 
 import { ActivityType, Client as DiscordClient, GatewayIntentBits } from "discord.js"
 
@@ -16,11 +15,11 @@ interface IBirthdayBotClient {
 }
 
 class BirthdayBotClient implements IBirthdayBotClient {
-  private CLIENT: Nullable<DiscordClient> = null
+  private CLIENT!: DiscordClient
 
-  private LOGO_SERVER: Nullable<LogoServer> = null
+  private LOGO_SERVER!: LogoServer
 
-  private isShutdown: boolean = false
+  private isShutdown: boolean = true
 
   async shutdown(event?: string): Promise<void> {
     if (this.isShutdown) {
@@ -33,22 +32,18 @@ class BirthdayBotClient implements IBirthdayBotClient {
 
     info("🔴 Shutting down...")
 
-    this.isShutdown = true
+    await this.CLIENT.destroy()
 
-    await this.CLIENT?.destroy()
-
-    await this.LOGO_SERVER?.stop()
+    await this.LOGO_SERVER.stop()
 
     DB.close()
+
+    this.isShutdown = true
 
     process.exit(0)
   }
 
   private async login(): Promise<void> {
-    if (!this.CLIENT) {
-      throw new Error("Invalid CLIENT")
-    }
-
     await this.CLIENT.login(env.TOKEN)
 
     if (this.CLIENT.user && env.DEBUG) {
@@ -95,6 +90,8 @@ class BirthdayBotClient implements IBirthdayBotClient {
     await loadCommands(this.CLIENT)
 
     await this.login()
+
+    this.isShutdown = false
 
     return this.CLIENT
   }
