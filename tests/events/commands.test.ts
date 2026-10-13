@@ -95,8 +95,8 @@ await Promise.all(
 
         const interaction: ChatInputCommandInteraction = {
           createdTimestamp: fake.date.past().getTime(),
-          deferReply: jest.fn().mockResolvedValue(undefined),
-          editReply: jest.fn().mockResolvedValue(undefined),
+          deferReply: jest.fn(),
+          editReply: jest.fn(),
           user,
           options: {
             getInteger: jest.fn().mockImplementation((s: MD): number => {
