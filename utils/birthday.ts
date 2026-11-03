@@ -141,13 +141,8 @@ class BirthdayBot implements IBirthdayBot {
 
         return this.CHANNEL.send({
           content: userMention(member.id),
-          flags: MessageFlags.SuppressNotifications,
-          embeds: [
-            new EmbedBuilder().setColor(env.COLOR).setTitle("🎂  HAPPY BIRTHDAY  🎉").setFooter({
-              iconURL: member.displayAvatarURL(),
-              text: member.displayName
-            })
-          ]
+          embeds: [new EmbedBuilder().setColor(env.COLOR).setTitle("🎂  HAPPY BIRTHDAY  🎉")],
+          flags: MessageFlags.SuppressNotifications
         })
       }),
       ...toAddRole.map((member: GuildMember): Promise<GuildMember> => {
