@@ -6,9 +6,9 @@ import { afterAll, beforeAll, describe, expect, spyOn, test } from "bun:test"
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as dayjs } from "dayjs"
 
-import { MAX_DAYS, MAX_ID_LEN, MAX_MONTHS, MIN_DAYS, MIN_ID_LEN, MIN_MONTHS } from "../../db/schema.ts"
+import { MAX_DAYS, MAX_MONTHS, MIN_DAYS, MIN_MONTHS } from "../../db/schema.ts"
 import { DB } from "../../utils/db.ts"
-import { env } from "../../utils/env.ts"
+import { env, MAX_ID_LEN, MIN_ID_LEN } from "../../utils/env.ts"
 
 if (!env.TEST_FULL) {
   spyOn(console, "info").mockImplementation((): void => undefined)

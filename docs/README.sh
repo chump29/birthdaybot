@@ -27,14 +27,13 @@ if [ "$(docker ps -q -f name="$_name")" ]; then
   _sqlite=$(docker exec "$_name" apk info sqlite | head -n 1 | cut -d " " -f 1)
   _sqlite=${_sqlite:7:-3}
 else
-  _sqlite=3.49.2
-  _static="*"
+  _sqlite=N/A
 fi
 if [[ "$HOSTNAME" == "guru" ]]; then
   docker context use default > /dev/null 2>&1
 fi
 export _sqlite
-echo -e " • SQLite: $_sqlite$_static"
+echo -e " • SQLite: $_sqlite"
 
 echo -e "\n🧪 Running tests…"
 bun run test:coverage

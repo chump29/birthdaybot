@@ -22,13 +22,13 @@ import {
 } from "discord.js"
 import { match, P } from "ts-pattern"
 
-import { birthdays, type IBirthday, MAX_ID_LEN, MIN_ID_LEN } from "../../db/schema.ts"
+import { birthdays, type IBirthday } from "../../db/schema.ts"
 import { type ICreate } from "../../events/clientReady.ts"
 import { type IInvoke } from "../../events/interactionCreate.ts"
 import { author, version } from "../../package.json" with { type: "json" }
 import { Birthday } from "../../utils/birthday.ts"
 import { DB } from "../../utils/db.ts"
-import { env } from "../../utils/env.ts"
+import { env, MAX_ID_LEN, MIN_ID_LEN } from "../../utils/env.ts"
 
 if (!env.TEST_FULL) {
   spyOn(console, "info").mockImplementation((): void => undefined)

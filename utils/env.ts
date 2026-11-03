@@ -23,7 +23,8 @@ import {
   union
 } from "valibot"
 
-import { MAX_ID_LEN, MIN_ID_LEN } from "../db/schema.ts"
+const MIN_ID_LEN = 17
+const MAX_ID_LEN = 19
 
 const COLOR_LEN = 6
 
@@ -113,4 +114,4 @@ if (import.meta.main) {
   printVars(env, ["CHANNEL_ID", "GUILD_ID", "ROLE_ID", "TOKEN"])
 }
 
-export { env }
+export { env, MAX_ID_LEN, MIN_ID_LEN }
