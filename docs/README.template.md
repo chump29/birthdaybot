@@ -79,15 +79,12 @@
 
 ##### From `@postfmly/logoserver`:
 
-|  📝 Description   | 📌 Variable |    {...} Value    |
-| :---------------: | :---------: | :---------------: |
-|     Logo Name     |  LOGO_NAME  | birthdaybot.webp  |
-|    Local Path     |  LOGO_PATH  |  ./utils/images   |
-|       Port        |  LOGO_PORT  | **random**/[port] |
-|     Logo URL      |  LOGO_URL   |      \<url>       |
-|    Logo 2 Name    | LOGO2_NAME  |   birthday.webp   |
-| Logo 2 Local Path | LOGO2_PATH  |  ./utils/images   |
-|    Logo 2 URL     |  LOGO2_URL  |      \<url>       |
+| 📝 Description | 📌 Variable |    {...} Value    |
+| :------------: | :---------: | :---------------: |
+|   Logo Name    |  LOGO_NAME  | birthdaybot.webp  |
+|   Local Path   |  LOGO_PATH  |  ./utils/images   |
+|      Port      |  LOGO_PORT  | **random**/[port] |
+|    Logo URL    |  LOGO_URL   |      \<url>       |
 
 ##### From `@postfmly/checkrate`:
 
