@@ -7,7 +7,7 @@
 ![Bun](https://img.shields.io/badge/Bun-1.4.4-informational?style=plastic&logo=bun "Bun") &nbsp;
 ![discord.js](https://img.shields.io/badge/discord.js-14.28.0-informational?style=plastic&logo=discord.js "discord.js") &nbsp; <!-- markdownlint-disable-line MD013 -->
 ![Drizzle](https://img.shields.io/badge/Drizzle-1.0.0--rc.5-informational?style=plastic&logo=drizzle "Drizzle") &nbsp;
-![SQLite](https://img.shields.io/badge/SQLite-N/A-informational?style=plastic&logo=sqlite "SQLite")
+![SQLite](https://img.shields.io/badge/SQLite-3.53.4-informational?style=plastic&logo=sqlite "SQLite")
 
 ![CodeQL](https://github.com/chump29/birthdaybot/workflows/CodeQL/badge.svg "CodeQL") &nbsp;
 ![Coverage](https://img.shields.io/badge/Coverage-72.85%25-success?style=plastic&logo=jest "Coverage")
