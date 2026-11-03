@@ -3,7 +3,6 @@ import { parse } from "node:path"
 import {
   type ChatInputCommandInteraction,
   EmbedBuilder,
-  type HexColorString,
   InteractionContextType,
   MessageFlags,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
@@ -33,7 +32,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
   await interaction.editReply({
     embeds: [
       new EmbedBuilder()
-        .setColor(env.COLOR as HexColorString)
+        .setColor(env.COLOR)
         .setAuthor({ iconURL: env.LOGO_URL, name: `${env.NAME} v${version}` })
         .setThumbnail(env.LOGO_URL)
         .setDescription("- Add birthday role")

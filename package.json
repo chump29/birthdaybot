@@ -25,64 +25,55 @@
     "env": "bun run --bun utils/env.ts",
     "env:test": "NODE_ENV=test bun run env",
     "preinstall": "bunx --bun only-allow bun",
-    "lint": "bun run lint:spell && bun run lint:biome && bun run lint:env && bun run lint:ts",
+    "lint": "bun run lint:spell && bun run lint:biome && bun run lint:ts",
     "lint:biome": "bun run --bun biome check --write --verbose --reporter=default --reporter=github --error-on-warnings",
     "lint:biome:ci": "bun run --bun biome ci --verbose --reporter=default --reporter=github --error-on-warnings",
-    "lint:env": "bun run --bun dotenv-linter check .",
+    "lint:ci": "bun run lint:biome:ci && bun run lint:ts",
     "lint:spell": "bun run --bun cspell --dot --verbose .",
     "lint:ts": "bun check",
     "prepare": "bun run --bun .husky/prepare.min.mjs",
     "prod": "bun run --bun index.ts",
-    "scan": "bun run scan:audit && bun run scan:cve && bun run scan:e18e",
-    "scan:audit": "bun audit",
-    "scan:cve": "bunx --bun cve-lite-cli --check-overrides --check-network --check-maintenance",
-    "scan:e18e": "bunx --bun @e18e/cli analyze",
+    "scan": "bun run scan:audit && bun run scan:cve && bun run scan:dupe",
+    "scan:audit": "bun audit --production",
+    "scan:cve": "bun run --bun cve-lite --check-maintenance --prod-only --only-used",
+    "scan:dupe": "bun dedupe --check",
     "sql": "drizzle-kit generate",
-    "test": "bun test --isolate --dots --bail",
-    "test:coverage": "bun test --isolate --dots --coverage --coverage-dir ./tests/coverage --coverage-reporter=text --coverage-reporter=lcov --bail",
-    "test:coverage:full": "bun test --isolate --coverage --coverage-dir ./tests/coverage --coverage-reporter=text --coverage-reporter=lcov --bail",
-    "test:full": "bun test --isolate --bail",
-    "updates": "bunx --bun npm-check-updates --dep overrides,prod,dev --cooldown 0 --install never --packageManager bun --peer"
+    "test": "bun test --isolate --dots --preload ./tests/setup.ts --bail --check",
+    "test:coverage": "bun test --isolate --dots --coverage-dir ./tests/coverage --coverage-reporter=text --coverage-reporter=lcov --preload ./tests/setup.ts --bail --check",
+    "test:coverage:full": "TEST_FULL=true bun test --isolate --coverage-dir ./tests/coverage --coverage-reporter=text --coverage-reporter=lcov --preload ./tests/setup.ts --bail --check",
+    "test:full": "TEST_FULL=true bun test --isolate --preload ./tests/setup.ts --bail --check",
+    "updates": "bunx --bun npm-check-updates --dep prod,dev --cooldown 0 --install never --packageManager bun --peer"
   },
   "lint-staged": {
-    "*.{json,ts}": "bun run --bun biome ci --no-errors-on-unmatched --error-on-warnings",
-    ".env*": "bun run --bun dotenv-linter check"
-  },
-  "overrides": {
-    "@biomejs/biome": "2.5.15",
-    "@discordjs/collection": "2.1.1",
-    "@types/bun": "1.4.3",
-    "@types/node": "26.6.5",
-    "chalk": "6.0.1",
-    "cspell": "10.3.6",
-    "globals": "17.13.0",
-    "ini": "7.0.0"
+    "*": "bun run --bun cspell --dot --no-must-find-files",
+    "*.{json,md,ts,yaml}": "bun run --bun biome ci --no-errors-on-unmatched --error-on-warnings"
   },
   "dependencies": {
-    "@postfmly/checkrate": "^2.0.4",
-    "@postfmly/logger": "^1.1.9",
-    "@postfmly/logoserver": "^1.3.14",
-    "@postfmly/types": "^1.0.7",
+    "@postfmly/checkrate": "^2.0.13",
+    "@postfmly/logger": "^1.2.6",
+    "@postfmly/logoserver": "^1.4.0",
     "dayjs": "^1.11.23",
-    "discord.js": "^14.27.0",
-    "drizzle-orm": "1.0.0-rc.4",
-    "envalid": "^9.0.0-beta",
+    "discord.js": "^14.28.0",
+    "drizzle-orm": "1.0.0-rc.5",
+    "envalid": "^9.0.0",
     "magic-regexp": "^0.11.2",
     "valibot": "^1.5.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
-    "@postfmly/config": "^1.6.3",
-    "drizzle-kit": "1.0.0-rc.4",
+    "@postfmly/config": "^1.6.18",
+    "@postfmly/types": "^1.0.12",
+    "cve-lite-cli": "^1.40.0",
+    "drizzle-kit": "1.0.0-rc.5",
     "expect-type": "^1.4.0",
     "husky": "^9.1.7",
     "lcov-total": "^2.1.1",
     "lint-staged": "^17.6.0",
-    "ts-pattern": "^5.9.0"
+    "ts-pattern": "^5.9.2"
   },
-  "packageManager": "bun@1.4.3",
+  "packageManager": "bun@1.4.4",
   "engines": {
-    "bun": "^1.4.3"
+    "bun": "^1.4.4"
   },
   "engineStrict": true
 }

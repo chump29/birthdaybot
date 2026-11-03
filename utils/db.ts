@@ -16,23 +16,23 @@ import { env } from "./env.ts"
 type DBType = ReturnType<typeof drizzle>
 
 interface IBirthdayBotDatabase {
-  readonly _db: Nullable<DBType>
   addBirthday: (userId: string, userName: string, month: number, day: number) => Promise<void>
   close: () => void
   deleteBirthday: (userId: string) => Promise<void>
   getBirthday: (userId: string) => Promise<Optional<IBirthday>>
   getBirthdays: () => Promise<IBirthday[]>
   getBirthdaysToday: () => Promise<IBirthday[]>
+  readonly instance: Nullable<DBType>
   isValidUser: (userId: string) => Promise<boolean>
   open: () => void
 }
 
 class BirthdayBotDatabase implements IBirthdayBotDatabase {
   private client: Nullable<Database> = null
-  _db: Nullable<DBType> = null
+  instance: Nullable<DBType> = null
 
   open(): void {
-    if (this._db) {
+    if (this.instance) {
       if (env.DEBUG) {
         info("⚠️  Database already open")
       }
@@ -40,7 +40,7 @@ class BirthdayBotDatabase implements IBirthdayBotDatabase {
       return
     }
 
-    const dbPathName: string = join(env.DB_PATH, env.DB_NAME)
+    const dbPathName = join(env.DB_PATH, env.DB_NAME)
 
     this.client = new Database(dbPathName, {
       create: true,
@@ -55,12 +55,12 @@ class BirthdayBotDatabase implements IBirthdayBotDatabase {
       PRAGMA wal_checkpoint(TRUNCATE);
     `)
 
-    this._db = drizzle({
+    this.instance = drizzle({
       client: this.client,
       jit: true
     })
 
-    migrate(this._db, {
+    migrate(this.instance, {
       migrationsFolder: env.DB_PATH
     })
 
@@ -70,7 +70,7 @@ class BirthdayBotDatabase implements IBirthdayBotDatabase {
   }
 
   close(): void {
-    if (!this._db) {
+    if (!this.instance) {
       if (env.DEBUG) {
         info("⚠️  Database already closed")
       }
@@ -81,7 +81,7 @@ class BirthdayBotDatabase implements IBirthdayBotDatabase {
     this.client?.close()
     this.client = null
 
-    this._db = null
+    this.instance = null
 
     if (env.DEBUG) {
       info("⏹️  Database closed")
@@ -89,11 +89,11 @@ class BirthdayBotDatabase implements IBirthdayBotDatabase {
   }
 
   private dbCheck(): DBType {
-    if (!this._db) {
+    if (!this.instance) {
       throw new Error("Database not open")
     }
 
-    return this._db
+    return this.instance
   }
 
   // * /birthday <month> <day>
@@ -132,9 +132,9 @@ class BirthdayBotDatabase implements IBirthdayBotDatabase {
   }
 
   async getBirthdaysToday(): Promise<IBirthday[]> {
-    const date: dayjs.Dayjs = dayjs()
-    const month: number = date.month() + 1
-    const day: number = date.date()
+    const date = dayjs()
+    const month = date.month() + 1
+    const day = date.date()
 
     return await this.dbCheck()
       .select()
@@ -143,6 +143,4 @@ class BirthdayBotDatabase implements IBirthdayBotDatabase {
   }
 }
 
-const DB: IBirthdayBotDatabase = new BirthdayBotDatabase()
-
-export { DB }
+export const DB = new BirthdayBotDatabase()

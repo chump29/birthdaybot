@@ -10,6 +10,7 @@ export _bun
 echo -e " • Bun: $_bun"
 
 _discord=$(jq -r '.dependencies."discord.js" // "❓"' ../package.json)
+_discord=${_discord:1}
 export _discord
 echo -e " • discord.js: $_discord"
 

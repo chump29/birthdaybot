@@ -12,7 +12,7 @@ interface IInteractionCreate {
   invoke: (interaction: Interaction) => Promise<void>
 }
 
-const loadCommands = async (client: Client): Promise<void> => {
+export const loadCommands = async (client: Client): Promise<void> => {
   const interactionCreate: IInteractionCreate = await import(join(import.meta.dir, `${Events.InteractionCreate}.ts`))
   client.on(Events.InteractionCreate, async (interaction: Interaction): Promise<void> => {
     try {
@@ -27,5 +27,3 @@ const loadCommands = async (client: Client): Promise<void> => {
     await clientReady.invoke(c)
   })
 }
-
-export { loadCommands }

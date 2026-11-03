@@ -9,7 +9,6 @@ import {
   type APIEmbedField,
   type ChatInputCommandInteraction,
   EmbedBuilder,
-  type HexColorString,
   InteractionContextType,
   MessageFlags,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
@@ -32,21 +31,21 @@ const create = (): RESTPostAPIChatInputApplicationCommandsJSONBody =>
     .toJSON()
 
 const getFields = (birthday: Optional<IBirthday>): APIEmbedField[] => {
-  const fields: APIEmbedField[] = [{ name: "_ _", value: "" } as APIEmbedField]
+  const fields: APIEmbedField[] = [{ name: "_ _", value: "" } satisfies APIEmbedField]
 
   if (birthday) {
-    const date: string = `${birthday.month}/${birthday.day}`
+    const date = `${birthday.month}/${birthday.day}`
 
     fields.push({
       inline: true,
       name: `${dayjs(date, "M/D").format("MMMM Do")}`,
       value: ""
-    } as APIEmbedField)
+    } satisfies APIEmbedField)
   } else {
     fields.push({
       name: "🚫  Birthday not set",
       value: ""
-    } as APIEmbedField)
+    } satisfies APIEmbedField)
   }
 
   return fields
@@ -64,7 +63,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
   await interaction.editReply({
     embeds: [
       new EmbedBuilder()
-        .setColor(env.COLOR as HexColorString)
+        .setColor(env.COLOR)
         .setTitle(`🎂  ${interaction.user.displayName}'s Birthday  🎉`)
         .setFields(getFields(await DB.getBirthday(interaction.user.id)))
         .toJSON()

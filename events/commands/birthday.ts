@@ -11,7 +11,7 @@ import {
   SlashCommandBuilder,
   type SlashCommandIntegerOption
 } from "discord.js"
-import { type SafeParseResult, safeParse } from "valibot"
+import { safeParse } from "valibot"
 
 import { BirthdaySchema, type IBirthday, MAX_DAYS, MAX_MONTHS, MIN_DAYS, MIN_MONTHS } from "../../db/schema.ts"
 import { bucket } from "../../utils/bucket.ts"
@@ -49,15 +49,18 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
     return
   }
 
-  const userId: string = interaction.user.id
-  const userName: string = interaction.user.displayName
+  const userId = interaction.user.id
+  const userName = interaction.user.displayName
 
-  const month: number = interaction.options.getInteger("month") as number
-  const day: number = interaction.options.getInteger("day") as number
+  // biome-ignore-start lint/style/noNonNullAssertion: required
+  const month = interaction.options.getInteger("month")!
+  const day = interaction.options.getInteger("day")!
+  // biome-ignore-end lint/style/noNonNullAssertion: required
+  const date = `${month}/${day}`
 
-  const birthday: IBirthday = { userId, userName, month, day } satisfies IBirthday
+  const birthday = { userId, userName, month, day } satisfies IBirthday
 
-  const b: SafeParseResult<BirthdaySchema> = safeParse(BirthdaySchema, birthday)
+  const b = safeParse(BirthdaySchema, birthday)
   if (!b.success) {
     await interaction.editReply({ content: "-# > ❌ Invalid birthday" })
 
@@ -67,7 +70,7 @@ const invoke = async (interaction: ChatInputCommandInteraction): Promise<void> =
   await DB.addBirthday(userId, userName, month, day)
 
   await interaction.editReply({
-    content: `-# > 🎂  Birthday set to ${dayjs(`${month}/${day}`, "M/D").format("MMMM Do")}  🎉`
+    content: `-# > 🎂  Birthday set to ${dayjs(date, "M/D").format("MMMM Do")}  🎉`
   })
 }
 

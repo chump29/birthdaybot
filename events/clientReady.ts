@@ -7,8 +7,8 @@ import { type Client, type RESTPostAPIChatInputApplicationCommandsJSONBody } fro
 
 import { env } from "../utils/env.ts"
 
-interface ICommandFile {
-  create: () => Promise<RESTPostAPIChatInputApplicationCommandsJSONBody>
+interface ICreate {
+  create: () => RESTPostAPIChatInputApplicationCommandsJSONBody
 }
 
 const invoke = async (client: Client): Promise<void> => {
@@ -16,15 +16,15 @@ const invoke = async (client: Client): Promise<void> => {
     throw new Error("Invalid client")
   }
 
-  const commands: string[] = (await readdir(join(import.meta.dir, "commands"))).filter((file: string): boolean =>
+  const commands = (await readdir(join(import.meta.dir, "commands"))).filter((file: string): boolean =>
     file.endsWith(".ts")
   )
 
   const commandsArray: RESTPostAPIChatInputApplicationCommandsJSONBody[] = []
   await Promise.allSettled(
     commands.map(async (command: string): Promise<void> => {
-      const commandFile: ICommandFile = await import(join(import.meta.dir, "commands", command))
-      commandsArray.push(await commandFile.create())
+      const file: ICreate = await import(join(import.meta.dir, "commands", command))
+      commandsArray.push(file.create())
 
       if (env.DEBUG) {
         info(`🔨 Loaded /${parse(command).name} command`)
@@ -34,4 +34,4 @@ const invoke = async (client: Client): Promise<void> => {
   client.application.commands.set(commandsArray)
 }
 
-export { invoke }
+export { type ICreate, invoke }

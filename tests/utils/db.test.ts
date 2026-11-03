@@ -3,28 +3,20 @@ import { join } from "node:path"
 
 import { afterAll, beforeAll, describe, expect, spyOn, test } from "bun:test"
 
-import { type Optional } from "@postfmly/types"
-
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as dayjs } from "dayjs"
 
-import {
-  type IBirthday,
-  MAX_DAYS,
-  MAX_MONTHS,
-  MAX_USER_ID_LEN,
-  MIN_DAYS,
-  MIN_MONTHS,
-  MIN_USER_ID_LEN
-} from "../../db/schema.ts"
+import { MAX_DAYS, MAX_ID_LEN, MAX_MONTHS, MIN_DAYS, MIN_ID_LEN, MIN_MONTHS } from "../../db/schema.ts"
 import { DB } from "../../utils/db.ts"
 import { env } from "../../utils/env.ts"
 
-const path: string = join(env.DB_PATH, env.DB_NAME)
+if (!env.TEST_FULL) {
+  spyOn(console, "info").mockImplementation((): void => undefined)
+}
+
+const path = join(env.DB_PATH, env.DB_NAME)
 
 beforeAll(async (): Promise<void> => {
-  spyOn(console, "info").mockImplementation((): void => undefined) // suppress
-
   for await (const file of glob(`${path}*`)) {
     await unlink(file)
   }
@@ -40,33 +32,33 @@ describe("db", (): void => {
   const getUserId = (): string =>
     fake.string.numeric({
       length: {
-        max: MAX_USER_ID_LEN,
-        min: MIN_USER_ID_LEN
+        max: MAX_ID_LEN,
+        min: MIN_ID_LEN
       }
     })
 
   const getUserName = (): string => fake.internet.displayName()
 
-  const userId: string = getUserId()
+  const userId = getUserId()
 
-  const date: dayjs.Dayjs = dayjs()
-  const month: number = date.month() + 1
-  const day: number = date.date()
+  const date = dayjs()
+  const month = date.month() + 1
+  const day = date.date()
 
   test("getBirthday", async (): Promise<void> => {
-    const userName: string = getUserName()
-    const m: number = fake.number.int({
+    const userName = getUserName()
+    const m = fake.number.int({
       max: MAX_MONTHS,
       min: MIN_MONTHS
     })
-    const d: number = fake.number.int({
+    const d = fake.number.int({
       max: MAX_DAYS,
       min: MIN_DAYS
     })
 
     await DB.addBirthday(userId, userName, m, d)
 
-    const birthday: Optional<IBirthday> = await DB.getBirthday(userId)
+    const birthday = await DB.getBirthday(userId)
 
     expect(birthday).not.toBeUndefined()
 
@@ -78,13 +70,13 @@ describe("db", (): void => {
   test("getBirthdaysToday", async (): Promise<void> => {
     await DB.addBirthday(getUserId(), getUserName(), month, day)
 
-    const birthdays: IBirthday[] = await DB.getBirthdaysToday()
+    const birthdays = await DB.getBirthdaysToday()
 
     expect(birthdays).toHaveLength(1)
   })
 
   test("getBirthdays", async (): Promise<void> => {
-    const birthdays: IBirthday[] = await DB.getBirthdays()
+    const birthdays = await DB.getBirthdays()
 
     expect(birthdays).toHaveLength(2)
   })
@@ -96,7 +88,7 @@ describe("db", (): void => {
   test("deleteBirthday", async (): Promise<void> => {
     await DB.deleteBirthday(userId)
 
-    const birthdays: IBirthday[] = await DB.getBirthdays()
+    const birthdays = await DB.getBirthdays()
 
     expect(birthdays).toHaveLength(1)
 

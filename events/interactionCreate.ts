@@ -2,7 +2,7 @@ import { join } from "node:path"
 
 import { type ChatInputCommandInteraction, type Interaction } from "discord.js"
 
-interface ICommandFile {
+interface IInvoke {
   invoke: (interaction: ChatInputCommandInteraction) => Promise<void>
 }
 
@@ -11,8 +11,8 @@ const invoke = async (interaction: Interaction): Promise<void> => {
     return
   }
 
-  const commandFile: ICommandFile = await import(join(import.meta.dir, "commands", interaction.commandName))
-  await commandFile.invoke(interaction)
+  const file: IInvoke = await import(join(import.meta.dir, "commands", interaction.commandName))
+  await file.invoke(interaction)
 }
 
-export { invoke }
+export { type IInvoke, invoke }

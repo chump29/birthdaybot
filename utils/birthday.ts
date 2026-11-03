@@ -1,22 +1,18 @@
 import { error, info } from "@postfmly/logger"
-import { type Nullable } from "@postfmly/types"
 
 import { default as dayjs } from "dayjs"
 import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
 import {
-  type Channel,
   ChannelType,
   type ChatInputCommandInteraction,
   type Client,
   EmbedBuilder,
   type Guild,
   type GuildMember,
-  type HexColorString,
   type Message,
   MessageFlags,
   type Role,
   type TextChannel,
-  type User,
   userMention
 } from "discord.js"
 
@@ -47,16 +43,17 @@ class BirthdayBot implements IBirthdayBot {
   async handleBirthdays(interaction?: ChatInputCommandInteraction): Promise<void> {
     let birthdays: IBirthday[]
 
-    const date: dayjs.Dayjs = dayjs()
+    const date = dayjs()
 
     if (interaction) {
       await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
-      const user: User = interaction.options.getUser("user") as User
+      // biome-ignore lint/style/noNonNullAssertion: required
+      const user = interaction.options.getUser("user")!
 
       birthdays = [
-        { day: date.date(), month: date.month() + 1, userId: user.id, userName: user.displayName } as IBirthday
-      ] as IBirthday[]
+        { day: date.date(), month: date.month() + 1, userId: user.id, userName: user.displayName }
+      ] satisfies IBirthday[]
 
       await interaction.editReply({ content: `-# > 🎉 Wished \`${user.displayName}\` a Happy Birthday` })
     } else {
@@ -75,23 +72,22 @@ class BirthdayBot implements IBirthdayBot {
     const toRemoveRole: GuildMember[] = []
     const toDelete: string[] = []
 
-    const memberTasks: Promise<ITaskData>[] = birthdays.map(async (birthday: IBirthday): Promise<ITaskData> => {
-      const userId: string = birthday.userId
+    const memberTasks = birthdays.map(async (birthday: IBirthday): Promise<ITaskData> => {
+      const { userId } = birthday
 
-      let member: Nullable<GuildMember> = this.GUILD.members.cache.get(userId) ?? null
-
+      let member = this.GUILD.members.cache.get(userId) ?? null
       if (!member) {
         try {
           member = await this.GUILD.members.fetch(userId)
         } catch {
-          return { userId, success: false } as ITaskData
+          return { userId, success: false } satisfies ITaskData
         }
       }
 
-      return { member, success: true } as ITaskData
+      return { member, success: true } satisfies ITaskData
     })
 
-    const taskResults: ITaskData[] = await Promise.all(memberTasks)
+    const taskResults = await Promise.all(memberTasks)
 
     for (const data of taskResults) {
       if (data.success && data.member) {
@@ -109,7 +105,7 @@ class BirthdayBot implements IBirthdayBot {
       }
     }
 
-    const birthdayIds: Set<string> = new Set(isBirthday.map((member: GuildMember): string => member.id))
+    const birthdayIds = new Set(isBirthday.map((member: GuildMember): string => member.id))
 
     for (const member of this.ROLE.members.values()) {
       if (!birthdayIds.has(member.id)) {
@@ -124,7 +120,9 @@ class BirthdayBot implements IBirthdayBot {
     }
 
     if (env.DEBUG) {
-      for (const [k, v] of Object.entries({ isBirthday, toAddRole, toDelete, toRemoveRole })) {
+      const entries = Object.entries({ isBirthday, toAddRole, toDelete, toRemoveRole })
+
+      for (const [k, v] of entries) {
         if (v.length > 0) {
           info(`🛈  ${k}: ${v.length}`)
         }
@@ -145,14 +143,10 @@ class BirthdayBot implements IBirthdayBot {
           content: userMention(member.id),
           flags: MessageFlags.SuppressNotifications,
           embeds: [
-            new EmbedBuilder()
-              .setColor(env.COLOR as HexColorString)
-              .setImage(env.LOGO2_URL)
-              .setTitle("🎂  HAPPY BIRTHDAY  🎉")
-              .setFooter({
-                iconURL: member.displayAvatarURL(),
-                text: member.displayName
-              })
+            new EmbedBuilder().setColor(env.COLOR).setTitle("🎂  HAPPY BIRTHDAY  🎉").setFooter({
+              iconURL: member.displayAvatarURL(),
+              text: member.displayName
+            })
           ]
         })
       }),
@@ -189,16 +183,16 @@ class BirthdayBot implements IBirthdayBot {
   }
 
   async init(client: Client): Promise<void> {
-    const channel: Nullable<Channel> = await client.channels.fetch(env.CHANNEL_ID)
-    if (!channel || channel.type !== ChannelType.GuildText) {
+    const channel = await client.channels.fetch(env.CHANNEL_ID)
+    if (channel?.type !== ChannelType.GuildText) {
       throw new Error("Invalid channel")
     }
 
-    this.CHANNEL = channel as TextChannel
+    this.CHANNEL = channel
 
     this.GUILD = await client.guilds.fetch(env.GUILD_ID)
 
-    const role: Nullable<Role> = await this.GUILD.roles.fetch(env.ROLE_ID)
+    const role = await this.GUILD.roles.fetch(env.ROLE_ID)
     if (!role) {
       throw new Error("Role not found")
     }
@@ -209,6 +203,4 @@ class BirthdayBot implements IBirthdayBot {
   }
 }
 
-const Birthday: IBirthdayBot = new BirthdayBot()
-
-export { Birthday }
+export const Birthday = new BirthdayBot()
